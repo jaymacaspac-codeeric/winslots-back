@@ -48,7 +48,7 @@
                             @endif
                             <div class="form-group">
                                 <div class="col-xs-12">
-                                    <input type="text" class="form-control" name="username" placeholder="Username" required> 
+                                    <input type="text" class="form-control" name="username" placeholder="Username" required autocomplete="off"> 
                                 </div>
                             </div>
                             <div class="form-group">
