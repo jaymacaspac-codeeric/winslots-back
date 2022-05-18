@@ -13,14 +13,18 @@ class TransactionController extends Controller
         $this->api_key = 'Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD';
     }
 
-    public function index() {
-        $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
-        $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
-        
-        return view('transaction.index', array(
-            'balance' => $balance,
-            'totalBalance' => $total_user_balance,
-        ));
+    public function index(Request $request) {
+        if($request->session()->has('username')) {
+            $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
+            $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
+            
+            return view('transaction.index', array(
+                'balance' => $balance,
+                'totalBalance' => $total_user_balance,
+            ));
+        } else {
+            return redirect('/');
+        }
     }
 
     

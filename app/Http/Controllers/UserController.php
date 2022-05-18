@@ -16,14 +16,18 @@ class UserController extends Controller
 
     }
 
-    public function userList() {
-        $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
-        $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
-
-        return view('user.list', array(
-            'balance' => $balance,
-            'totalBalance' => $total_user_balance,
-        ));
+    public function userList(Request $request) {
+        if($request->session()->has('username')) {
+            $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
+            $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
+    
+            return view('user.list', array(
+                'balance' => $balance,
+                'totalBalance' => $total_user_balance,
+            ));
+        } else {
+            return redirect('/');
+        }
     }
 
     public function getUserList() {

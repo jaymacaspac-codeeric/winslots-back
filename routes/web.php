@@ -41,7 +41,7 @@ Route::get('/', [AuthController::class, 'index']);
 // Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/login', [MainController::class, 'login']);
-Route::post('/logout', [MainController::class, 'logout']);
+Route::get('/logout', [MainController::class, 'logout']);
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
 

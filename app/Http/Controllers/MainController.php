@@ -52,8 +52,9 @@ class MainController extends Controller
     }
 
     public function logout(Request $request) {
-        $request->session()->flush();
-    
-        return $this->loggedOut($request) ?: redirect('/');
+        if($request->session()->has('username')) {
+            $request->session()->flush();
+            return redirect('/');
+        }
     }
 }
