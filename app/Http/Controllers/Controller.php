@@ -260,7 +260,13 @@ class Controller extends BaseController
     }
 
     public function getTotalUserBalance() {
-        $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
+        // $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
+		
+        $user = Http::withHeaders([
+			'Authorization' => 'Bearer ' . $this->api_key,
+			'Accept' => 'application/json',
+			'Content-Type' => 'application/json'
+		])->get('https://api.honorlink.org/api/user-list');
     
         $data = json_decode((string) $user->getBody(), true);
         $total = 0;
