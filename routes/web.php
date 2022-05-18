@@ -33,6 +33,10 @@ Route::get('/bet/result', [BetController::class, 'betResult']);
 Route::get('/bet/refund', [BetController::class, 'betRefund']);
 
 
+Route::get('/.well-known/pki-validation/EF92F3897AAD9391E8AD3A3D1F90CEFD.txt', function () {
+    return public_path('/.well-known/pki-validation/EF92F3897AAD9391E8AD3A3D1F90CEFD.txt');
+});
+
 // Route::get('/', function () {
 //     return view('login/index');
 // });

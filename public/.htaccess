@@ -22,8 +22,4 @@
 
 location / {
     try_files $uri $uri/ /index.php?$query_string;
-    
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
 }
