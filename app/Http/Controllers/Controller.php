@@ -258,9 +258,11 @@ class Controller extends BaseController
 		// 	'Content-Type' => 'application/json'
 		// ])->get('https://api.honorlink.org/api/my-info');
 
+		$useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+
 		$response = Curl::to('https://api.honorlink.org/api/my-info')
         ->withHeader('Authorization: Bearer '. $this->api_key)
-		// ->asJson()
+		->withOption('USERAGENT', $useragent)
         ->get();
 
 		return $response;
@@ -289,8 +291,11 @@ class Controller extends BaseController
 		// 	}
 		// }
 
+		$useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+
 		$user = Curl::to('https://api.honorlink.org/api/user-list')
         ->withHeader('Authorization: Bearer '. $this->api_key)
+		->withOption('USERAGENT', $useragent)
         ->get();
 
 		$data = json_decode($user, true);
@@ -337,8 +342,8 @@ class Controller extends BaseController
             'perPage'         => 1000
         ); 
 
-        $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
-        $bet = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/transaction-list-simple', $params);
+        // $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
+        // $bet = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/transaction-list-simple', $params);
         
         // $search_by_bet = $this->search(json_decode((string) $bet->getBody(), true), 'type', 'bet');
 
@@ -349,13 +354,16 @@ class Controller extends BaseController
 		// 		'id' => $element['id']
 		// 	];
 		// }
+		$useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
 		$user = Curl::to('https://api.honorlink.org/api/user-list')
         ->withHeader('Authorization: Bearer '. $this->api_key)
+		->withOption('USERAGENT', $useragent)
         ->get();
 
 		$bet = Curl::to('https://api.honorlink.org/api/transaction-list-simple')
         ->withHeader('Authorization: Bearer '. $this->api_key)
+		->withOption('USERAGENT', $useragent)
 		->withData( $params )
         ->get();
 
