@@ -7,6 +7,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Http;
+use Ixudra\Curl\Facades\Curl;
 
 class Controller extends BaseController
 {
@@ -251,17 +252,23 @@ class Controller extends BaseController
 
     public function getAgentInfo() {
         // $info = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/my-info');
-        $info = Http::withHeaders([
-			'Authorization' => 'Bearer ' . $this->api_key,
-			'Accept' => 'application/json',
-			'Content-Type' => 'application/json'
-		])->get('https://api.honorlink.org/api/my-info');
+        // $info = Http::withHeaders([
+		// 	'Authorization' => 'Bearer ' . $this->api_key,
+		// 	'Accept' => 'application/json',
+		// 	'Content-Type' => 'application/json'
+		// ])->get('https://api.honorlink.org/api/my-info');
+
+		$response = Curl::to('https://api.honorlink.org/api/my-info')
+        ->withHeader('Authorization: Bearer '. $this->api_key)
+        ->get();
+
+		return $response;
     
-		if($info->serverError()) {
-			return 'Server Error';
-		} else {
-			return $info;
-		}
+		// if($info->serverError()) {
+		// 	return 'Server Error';
+		// } else {
+		// 	return $info;
+		// }
     }
 
     public function getTotalUserBalance() {
