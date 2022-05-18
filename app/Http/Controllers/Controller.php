@@ -263,7 +263,7 @@ class Controller extends BaseController
 		// ->asJson()
         ->get();
 
-		return json_decode($response, true);
+		return $response;
     
 		// if($info->serverError()) {
 		// 	return 'Server Error';
