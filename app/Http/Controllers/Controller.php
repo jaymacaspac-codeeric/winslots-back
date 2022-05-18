@@ -260,9 +260,10 @@ class Controller extends BaseController
 
 		$response = Curl::to('https://api.honorlink.org/api/my-info')
         ->withHeader('Authorization: Bearer '. $this->api_key)
+		// ->asJson()
         ->get();
 
-		return $response;
+		return json_decode($response, true);
     
 		// if($info->serverError()) {
 		// 	return 'Server Error';
@@ -274,13 +275,25 @@ class Controller extends BaseController
     public function getTotalUserBalance() {
         // $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
 		
-        $user = Http::withHeaders([
-			'Authorization' => 'Bearer ' . $this->api_key,
-			'Accept' => 'application/json',
-			'Content-Type' => 'application/json'
-		])->get('https://api.honorlink.org/api/user-list');
+        // $user = Http::withHeaders([
+		// 	'Authorization' => 'Bearer ' . $this->api_key,
+		// 	'Accept' => 'application/json',
+		// 	'Content-Type' => 'application/json'
+		// ])->get('https://api.honorlink.org/api/user-list');
     
-        $data = json_decode((string) $user->getBody(), true);
+        // $data = json_decode((string) $user->getBody(), true);
+        // $total = 0;
+		// if($data) {
+		// 	foreach ($data as $item) {
+		// 		$total += $item['balance'];
+		// 	}
+		// }
+
+		$user = Curl::to('https://api.honorlink.org/api/user-list')
+        ->withHeader('Authorization: Bearer '. $this->api_key)
+        ->get();
+
+		$data = json_decode($user, true);
         $total = 0;
 		if($data) {
 			foreach ($data as $item) {
@@ -288,11 +301,13 @@ class Controller extends BaseController
 			}
 		}
 
-		if($user->serverError()) {
-			return 'Server Error';
-		} else {
-			return $total;
-		}
+		return $total;
+
+		// if($user->serverError()) {
+		// 	return 'Server Error';
+		// } else {
+		// 	return $total;
+		// }
     }
 
     public function search($array, $key, $value) {
@@ -325,7 +340,26 @@ class Controller extends BaseController
         $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
         $bet = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/transaction-list-simple', $params);
         
-        $search_by_bet = $this->search(json_decode((string) $bet->getBody(), true), 'type', 'bet');
+        // $search_by_bet = $this->search(json_decode((string) $bet->getBody(), true), 'type', 'bet');
+
+        // $bet_by_user = [];
+		// foreach($search_by_bet as $element) {
+		// 	// group by betting log
+		// 	$bet_by_user[$element['user']['id']][] = [
+		// 		'id' => $element['id']
+		// 	];
+		// }
+
+		$user = Curl::to('https://api.honorlink.org/api/user-list')
+        ->withHeader('Authorization: Bearer '. $this->api_key)
+        ->get();
+
+		$bet = Curl::to('https://api.honorlink.org/api/transaction-list-simple')
+        ->withHeader('Authorization: Bearer '. $this->api_key)
+		->withData( $params )
+        ->get();
+
+		$search_by_bet = $this->search($bet, 'type', 'bet');
 
         $bet_by_user = [];
 		foreach($search_by_bet as $element) {
@@ -335,10 +369,15 @@ class Controller extends BaseController
 			];
 		}
 
-        return array(
-            'user_count' => !$user->serverError() ? count(json_decode((string) $user->getBody(), true)) : 0,
-            'total_today_bets' => !$bet->serverError() ? count($search_by_bet) : 0,
-            'total_today_betting' => !$bet->serverError() ? count($bet_by_user) : 0
+        // return array(
+        //     'user_count' => !$user->serverError() ? count(json_decode((string) $user->getBody(), true)) : 0,
+        //     'total_today_bets' => !$bet->serverError() ? count($search_by_bet) : 0,
+        //     'total_today_betting' => !$bet->serverError() ? count($bet_by_user) : 0
+        // );
+		return array(
+            'user_count' => $user ? count(json_decode($user, true)) : 0,
+            'total_today_bets' => $bet ? count($search_by_bet) : 0,
+            'total_today_betting' => $bet ? count($bet_by_user) : 0
         );
     }
 
