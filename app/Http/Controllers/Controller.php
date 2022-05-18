@@ -250,8 +250,13 @@ class Controller extends BaseController
 	}
 
     public function getAgentInfo() {
-        $info = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/my-info');
-
+        // $info = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/my-info');
+        $info = Http::withHeaders([
+			'Authorization' => 'Bearer ' . $this->api_key,
+			'Accept' => 'application/json',
+			'Content-Type' => 'application/json'
+		])->get('https://api.honorlink.org/api/my-info');
+    
 		if($info->serverError()) {
 			return 'Server Error';
 		} else {
