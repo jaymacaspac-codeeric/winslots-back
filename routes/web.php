@@ -34,7 +34,9 @@ Route::get('/bet/refund', [BetController::class, 'betRefund']);
 
 
 Route::get('/.well-known/pki-validation/EF92F3897AAD9391E8AD3A3D1F90CEFD.txt', function () {
-    return public_path('/.well-known/pki-validation/EF92F3897AAD9391E8AD3A3D1F90CEFD.txt');
+    return '3B8A0E7DEC4B5C6497B824A5AED890127295C690F72FF35AA2F8F0ADD3EBFEDE
+    comodoca.com
+    b0d7bb3675f1dd8';
 });
 
 // Route::get('/', function () {
