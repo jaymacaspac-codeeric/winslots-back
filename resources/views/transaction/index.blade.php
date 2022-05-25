@@ -33,7 +33,9 @@
             <div class="d-flex m-l-10 hidden-md-down">
                 <div class="chart-text m-r-10">
                     <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-holding-balance"> {{ number_format($balance, 0) }} </span> Pot</span></h4>
+                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-holding-balance"> 
+                        {{-- {{ number_format($balance, 0) }} </span> Pot</span> --}}
+                    </h4>
                 </div>
                 <div class="spark-chart">
                     <div id="monthchart"></div>
@@ -47,7 +49,9 @@
             <div class="d-flex m-l-10 hidden-md-down">
                 <div class="chart-text m-r-10">
                     <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-user-holding-balance"> {{ number_format($totalBalance), 0 }} </span> Pot</span></h4>
+                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-user-holding-balance"> 
+                        {{-- {{ number_format($totalBalance), 0 }} </span> Pot</span> --}}
+                    </h4>
                 </div>
                 <div class="spark-chart">
                     <div id="monthchart"></div>
@@ -226,5 +230,6 @@
                         
                     ]
                 });
+                console.log(table);
     </script>
 @endsection

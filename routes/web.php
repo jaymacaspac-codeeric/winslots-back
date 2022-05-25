@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BetHistoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AgentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,13 +33,6 @@ Route::get('/bet', [BetController::class, 'bet']);
 Route::get('/bet/result', [BetController::class, 'betResult']);
 Route::get('/bet/refund', [BetController::class, 'betRefund']);
 
-
-Route::get('/.well-known/pki-validation/EF92F3897AAD9391E8AD3A3D1F90CEFD.txt', function () {
-    return '3B8A0E7DEC4B5C6497B824A5AED890127295C690F72FF35AA2F8F0ADD3EBFEDE
-    comodoca.com
-    b0d7bb3675f1dd8';
-});
-
 // Route::get('/', function () {
 //     return view('login/index');
 // });
@@ -55,6 +49,11 @@ Route::get('/user-list', [UserController::class, 'userList'])->name('user.list')
 Route::get('/user-list/{username}', [UserController::class, 'getUserInfo'])->name('user.info');
 Route::get('/get-user-list', [UserController::class, 'getUserList']);
 Route::get('/bet-history/user', [UserController::class, 'userBetHistory'])->name('user.bet');
+Route::post('/recharge', [UserController::class, 'userRecharge']);
+Route::post('/collect', [UserController::class, 'userCollect']);
+
+Route::get('/check-user/{username}', [UserController::class, 'checkUser']);
+Route::post('/create-user', [UserController::class, 'createUser']);
 
 Route::get('/bet-history', [BetHistoryController::class, 'index'])->name('bet.index');
 Route::get('/bet-history/list', [BetHistoryController::class, 'betHistoryList'])->name('bet.history');
@@ -62,3 +61,10 @@ Route::get('/bet-history/details', [BetHistoryController::class, 'betHistoryDeta
 
 Route::get('/transaction', [TransactionController::class, 'index'])->name('transaction.index');
 Route::get('/transaction/list', [TransactionController::class, 'transactionList'])->name('transaction.list');
+
+// AGENT
+Route::get('/agent', [AgentController::class, 'list'])->name('agent.list');
+Route::get('/create-agent', [AgentController::class, 'createAgent'])->name('agent.create');
+Route::post('/save-agent', [AgentController::class, 'saveAgent'])->name('agent.save');
+Route::post('/check-duplicate-agent', [AgentController::class, 'checkAgentDuplicate'])->name('agent.duplicate');
+Route::post('/agent-tree', [AgentController::class, 'populateAgentTree'])->name('agent.tree');

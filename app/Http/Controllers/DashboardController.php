@@ -22,7 +22,7 @@ class DashboardController extends Controller
         // return redirect("/")->with('fail', 'You are not allowed to access');
 
         if($request->session()->has('username')) {
-            dd($this->getAgentInfo());
+            // dd($this->getAgentInfo());
             
             $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
             $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;

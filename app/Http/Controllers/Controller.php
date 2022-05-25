@@ -251,31 +251,31 @@ class Controller extends BaseController
 	}
 
     public function getAgentInfo() {
-        // $info = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/my-info');
+        $info = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/my-info');
         // $info = Http::withHeaders([
 		// 	'Authorization' => 'Bearer ' . $this->api_key,
 		// 	'Accept' => 'application/json',
 		// 	'Content-Type' => 'application/json'
 		// ])->get('https://api.honorlink.org/api/my-info');
 
-		$useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+		// $useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
-		$response = Curl::to('https://api.honorlink.org/api/my-info')
-        ->withHeader('Authorization: Bearer '. $this->api_key)
-		->withOption('USERAGENT', $useragent)
-        ->get();
+		// $response = Curl::to('https://api.honorlink.org/api/my-info')
+        // ->withHeader('Authorization: Bearer '. $this->api_key)
+		// ->withOption('USERAGENT', $useragent)
+        // ->get();
 
-		return $response;
+		// return json_decode($response, true);
     
-		// if($info->serverError()) {
-		// 	return 'Server Error';
-		// } else {
-		// 	return $info;
-		// }
+		if($info->serverError()) {
+			return 'Server Error';
+		} else {
+			return $info;
+		}
     }
 
     public function getTotalUserBalance() {
-        // $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
+        $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
 		
         // $user = Http::withHeaders([
 		// 	'Authorization' => 'Bearer ' . $this->api_key,
@@ -283,22 +283,7 @@ class Controller extends BaseController
 		// 	'Content-Type' => 'application/json'
 		// ])->get('https://api.honorlink.org/api/user-list');
     
-        // $data = json_decode((string) $user->getBody(), true);
-        // $total = 0;
-		// if($data) {
-		// 	foreach ($data as $item) {
-		// 		$total += $item['balance'];
-		// 	}
-		// }
-
-		$useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
-
-		$user = Curl::to('https://api.honorlink.org/api/user-list')
-        ->withHeader('Authorization: Bearer '. $this->api_key)
-		->withOption('USERAGENT', $useragent)
-        ->get();
-
-		$data = json_decode($user, true);
+        $data = json_decode((string) $user->getBody(), true);
         $total = 0;
 		if($data) {
 			foreach ($data as $item) {
@@ -306,13 +291,28 @@ class Controller extends BaseController
 			}
 		}
 
-		return $total;
+		// $useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
-		// if($user->serverError()) {
-		// 	return 'Server Error';
-		// } else {
-		// 	return $total;
+		// $user = Curl::to('https://api.honorlink.org/api/user-list')
+        // ->withHeader('Authorization: Bearer '. $this->api_key)
+		// ->withOption('USERAGENT', $useragent)
+        // ->get();
+
+		// $data = json_decode($user, true);
+        // $total = 0;
+		// if($data) {
+		// 	foreach ($data as $item) {
+		// 		$total += $item['balance'];
+		// 	}
 		// }
+
+		// return $total;
+
+		if($user->serverError()) {
+			return 'Server Error';
+		} else {
+			return $total;
+		}
     }
 
     public function search($array, $key, $value) {
@@ -342,32 +342,10 @@ class Controller extends BaseController
             'perPage'         => 1000
         ); 
 
-        // $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
-        // $bet = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/transaction-list-simple', $params);
+        $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
+        $bet = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/transaction-list-simple', $params);
         
-        // $search_by_bet = $this->search(json_decode((string) $bet->getBody(), true), 'type', 'bet');
-
-        // $bet_by_user = [];
-		// foreach($search_by_bet as $element) {
-		// 	// group by betting log
-		// 	$bet_by_user[$element['user']['id']][] = [
-		// 		'id' => $element['id']
-		// 	];
-		// }
-		$useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
-
-		$user = Curl::to('https://api.honorlink.org/api/user-list')
-        ->withHeader('Authorization: Bearer '. $this->api_key)
-		->withOption('USERAGENT', $useragent)
-        ->get();
-
-		$bet = Curl::to('https://api.honorlink.org/api/transaction-list-simple')
-        ->withHeader('Authorization: Bearer '. $this->api_key)
-		->withOption('USERAGENT', $useragent)
-		->withData( $params )
-        ->get();
-
-		$search_by_bet = $this->search($bet, 'type', 'bet');
+        $search_by_bet = $this->search(json_decode((string) $bet->getBody(), true), 'type', 'bet');
 
         $bet_by_user = [];
 		foreach($search_by_bet as $element) {
@@ -376,17 +354,39 @@ class Controller extends BaseController
 				'id' => $element['id']
 			];
 		}
+		// $useragent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
-        // return array(
-        //     'user_count' => !$user->serverError() ? count(json_decode((string) $user->getBody(), true)) : 0,
-        //     'total_today_bets' => !$bet->serverError() ? count($search_by_bet) : 0,
-        //     'total_today_betting' => !$bet->serverError() ? count($bet_by_user) : 0
-        // );
-		return array(
-            'user_count' => $user ? count(json_decode($user, true)) : 0,
-            'total_today_bets' => $bet ? count($search_by_bet) : 0,
-            'total_today_betting' => $bet ? count($bet_by_user) : 0
+		// $user = Curl::to('https://api.honorlink.org/api/user-list')
+        // ->withHeader('Authorization: Bearer '. $this->api_key)
+		// ->withOption('USERAGENT', $useragent)
+        // ->get();
+
+		// $bet = Curl::to('https://api.honorlink.org/api/transaction-list-simple')
+        // ->withHeader('Authorization: Bearer '. $this->api_key)
+		// ->withOption('USERAGENT', $useragent)
+		// ->withData( $params )
+        // ->get();
+
+		// $search_by_bet = $this->search($bet, 'type', 'bet');
+
+        // $bet_by_user = [];
+		// foreach($search_by_bet as $element) {
+		// 	// group by betting log
+		// 	$bet_by_user[$element['user']['id']][] = [
+		// 		'id' => $element['id']
+		// 	];
+		// }
+
+        return array(
+            'user_count' => !$user->serverError() ? count(json_decode((string) $user->getBody(), true)) : 0,
+            'total_today_bets' => !$bet->serverError() ? count($search_by_bet) : 0,
+            'total_today_betting' => !$bet->serverError() ? count($bet_by_user) : 0
         );
+		// return array(
+        //     'user_count' => $user ? count(json_decode($user, true)) : 0,
+        //     'total_today_bets' => $bet ? count($search_by_bet) : 0,
+        //     'total_today_betting' => $bet ? count($bet_by_user) : 0
+        // );
     }
 
     // USER LIST

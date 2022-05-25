@@ -45,6 +45,7 @@ class MainController extends Controller
             )->first();
         if($user) {
             session(['username' => $user->username]);
+            session(['agent_id' => $user->agent_id]);
             return redirect('dashboard');
         } else {
             return back()->with('fail', 'Invalid Credentials.');

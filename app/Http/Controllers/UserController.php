@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -117,38 +118,98 @@ class UserController extends Controller
 
     // if not using the integrated wallet
     public function userRecharge() {
-        $username = '';
-        $amount = '';
+        $username = $_POST['username'];
+        $amount = $_POST['amount'];
 
-        $add_balance = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/add-balance', [
+        $add_balance = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user/add-balance', [
             'username'     => $username,
             'amount'       => $amount
         ]);
+
+        $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
+        $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
         
         $data = array(
             'recharge' => $add_balance,
-            'info' => $this->getAgentInfo(),
-            'totalBalance' => $this->getTotalUserBalance()
+            'balance' => $balance,
+            'totalBalance' => $total_user_balance
         );
 
         return $data;
     }
 
     public function userCollect() {
-        $username = '';
-        $amount = '';
+        $username = $_POST['username'];
+        $amount = $_POST['amount'];
 
-        $collect_balance = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/sub-balance', [
+        $collect_balance = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user/sub-balance', [
             'username'     => $username,
-            'amount'       => $amount
+            'amount'       => abs($amount)
         ]);
 
+        $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
+        $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
+
         $data = array(
-            'recharge' => $collect_balance,
-            'info' => $this->getAgentInfo(),
-            'totalBalance' => $this->getTotalUserBalance()
+            'collect' => $collect_balance,
+            'balance' => $balance,
+            'totalBalance' => $total_user_balance
         );
 
         return $data;
+    }
+
+    public function checkUser($username) {
+        $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user', [
+            'username'     => $username
+        ]);
+
+        $data = array(
+            // 'data' => $user,
+            'status_code' => $user->status()
+        );
+
+        return json_encode($data);
+    }
+
+    public function createUser() {
+        $username   = isset($_POST['username'])     ? $_POST['username']    : "";
+        $nickname   = isset($_POST['nickname'])     ? $_POST['nickname']    : "";
+        $pass       = isset($_POST['password'])     ? $_POST['password']    : "";
+        $email      = isset($_POST['email'])        ? $_POST['email']       : "";
+
+        $user = DB::table('info_users')->insert([
+            'user_id' => $_POST['user_id'],
+            'username' => $username,
+            'nickname' => $nickname,
+            'user_pw' => md5($pass),
+            'agent_id' => session('agent_id'),
+            'email' => $email,
+            'balance' => $_POST['balance'],
+            'point' => $_POST['point'],
+            'created_at' => $_POST['created_at'],
+            'status' => '1'
+        ]);
+        if($user) {
+            return 'success';
+        } else {
+            return 'failed';
+        }
+    }
+
+    public function recharge() {
+        $amount = $_POST['amount'];
+        $username = $_POST['username'];
+
+        $add_balance = Http::withToken($this->api_key)->post('https://api.honorlink.org/api/user/add-balance', [
+            'amount'     => $amount,
+            'username'     => $username
+        ]);
+
+        return $add_balance;
+    }
+
+    public function collect() {
+        
     }
 }

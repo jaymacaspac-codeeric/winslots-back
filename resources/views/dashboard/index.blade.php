@@ -7,8 +7,9 @@
             <div class="chart-text m-r-10">
                 <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
                 <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-holding-balance">
-                    {{ number_format($balance, 0) }}
-                </span> Pot</span></h4>
+                    {{-- {{ number_format($balance, 0) }}
+                </span> Pot</span> --}}
+            </h4>
             </div>
             <div class="spark-chart">
                 <div id="monthchart"></div>
@@ -23,8 +24,9 @@
             <div class="chart-text m-r-10">
                 <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
                 <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-user-holding-balance">
-                    {{ number_format($totalBalance), 0 }}
-                </span> Pot</span></h4>
+                    {{-- {{ number_format($totalBalance), 0 }}
+                </span> Pot</span> --}}
+            </h4>
             </div>
             <div class="spark-chart">
                 <div id="monthchart"></div>
@@ -58,8 +60,8 @@
                 <!-- Row -->
                 <div class="row">
                     <div class="col-8"><h6 class="dashboard-card-label">Total User</h6>
-                        <span class="dashboard-card-data">
-                            {{ $user_count }}
+                        <span class="dashboard-card-data dashboard-user-count">
+                            {{-- {{ $user_count }} --}}
                         </span>
                     </div>
                     <div class="col-4 align-self-center text-right  p-l-0 fa fa-users dashboard-icon"> </div>
@@ -74,8 +76,8 @@
                 <!-- Row -->
                 <div class="row">
                     <div class="col-8"><h6 class="dashboard-card-label">현재 보유 금액</h6>
-                        <span class="dashboard-card-data">
-                            {{ number_format($balance, 0) }} Pot
+                        <span class="dashboard-card-data dashboard-total-balance">
+                            {{-- {{ number_format($balance, 0) }} Pot --}}
                         </span>
                     </div>
                     <div class="col-4 align-self-center text-right  p-l-0 fa fa-money dashboard-icon"> </div>
@@ -118,4 +120,29 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('custom-js')
+<script>
+       $.ajax({
+            url: "https://api.honorlink.org/api/my-info",
+            headers: {
+                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+            },
+            type: 'GET',
+            success: function(data) {
+                $('.dashboard-total-balance').text(data['balance'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
+            }
+        });
+        $.ajax({
+            url: "https://api.honorlink.org/api/user-list",
+            headers: {
+                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+            },
+            type: 'GET',
+            success: function(data) {
+                $('.dashboard-user-count').text(data.length);
+            }
+        });
+</script>
 @endsection

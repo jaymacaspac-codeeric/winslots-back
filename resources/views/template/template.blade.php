@@ -11,6 +11,7 @@
     <meta http-equiv="cache-control" content="private, max-age=0, no-cache">
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="expires" content="0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{{ URL::asset('assets/images/logo.png') }}">
     <title>WINSLOTS</title>
@@ -223,10 +224,16 @@
                         <li class="nav-devider"></li>
                             <li class="{{ (request()->is('dashboard')) ? 'active' : '' }}"> <a href="{{ url('/dashboard') }}" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard </span></a> </li>
                         <li class="nav-small-cap">User Management</li>
-                            <li class="{{ (request()->is('user*')) ? 'active' : '' }}"> <a href="{{ url('/user-list') }}"><i class="mdi mdi-account-multiple"></i><span class="hide-menu">User List </span></a> </li>
-                            <li class="{{ (request()->is('bet*')) ? 'active' : '' }}"> <a href="{{ url('/bet-history') }}"><i class="mdi mdi-gamepad-variant"></i><span class="hide-menu">Betting History </span></a> </li>
                             <!-- <li class=""> <a href="deposit_request.php"><i class="mdi mdi-gamepad-variant"></i><span class="hide-menu">Deposit Request </span></a> </li>
                             <li class=""> <a href="#"><i class="mdi mdi-gamepad-variant"></i><span class="hide-menu">Withdrawal Request </span></a> </li> -->
+                            <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Agent</span></a>
+                                <ul aria-expanded="false" class="collapse">
+                                    <li class="{{ (request()->is('agent*')) ? 'active' : '' }}"> <a href="{{ url('/agent') }}">Agent List</a> </li>
+                                    <li class="{{ (request()->is('agent*')) ? 'active' : '' }}"> <a href="{{ url('/create-agent') }}">Create Agent</a> </li>
+                                </ul>
+                            </li>
+                            <li class="{{ (request()->is('user*')) ? 'active' : '' }}"> <a href="{{ url('/user-list') }}"><i class="mdi mdi-account-multiple"></i><span class="hide-menu">User List </span></a> </li>
+                            <li class="{{ (request()->is('bet*')) ? 'active' : '' }}"> <a href="{{ url('/bet-history') }}"><i class="mdi mdi-gamepad-variant"></i><span class="hide-menu">Betting History </span></a> </li>
                         <li class="nav-small-cap">Admin</li>
                             <!-- <li class=""> <a href="admin.php"><i class="mdi mdi-account-box"></i><span class="hide-menu">Admin List </span></a> </li> -->
                             <li class="{{ (request()->is('transaction*')) ? 'active' : '' }}"> <a href="{{ url('/transaction') }}"><i class="mdi mdi-account-box"></i><span class="hide-menu">Transaction History </span></a> </li>
@@ -310,6 +317,33 @@
     <!-- ============================================================== -->
     <script src="{{ URL::asset('assets/plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
 
+    <script>
+       $.ajax({
+            url: "https://api.honorlink.org/api/my-info",
+            headers: {
+                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+            },
+            type: 'GET',
+            success: function(data) {
+                $('.total-holding-balance').text(data['balance'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
+            }
+        });
+
+        $.ajax({
+            url: "https://api.honorlink.org/api/user-list",
+            headers: {
+                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+            },
+            type: 'GET',
+            success: function(data) {
+                var total = data.reduce(function(sum, current) {
+                    return sum + current.balance;
+                }, 0);
+
+                $('.total-user-holding-balance').text(total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
+            }
+        });
+    </script>
     @yield('custom-js')
 </body>
 
