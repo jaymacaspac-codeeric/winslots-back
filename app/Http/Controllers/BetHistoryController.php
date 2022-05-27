@@ -9,12 +9,12 @@ class BetHistoryController extends Controller
 {
     public function index(Request $request) {
         if($request->session()->has('username')) {
-            $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
-            $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
+            // $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
+            // $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
     
            return view('bet-history.index', array(
-                'balance' => $balance,
-                'totalBalance' => $total_user_balance,
+                // 'balance' => $balance,
+                // 'totalBalance' => $total_user_balance,
             ));
         } else {
             return redirect('/');

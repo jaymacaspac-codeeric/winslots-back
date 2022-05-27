@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +27,13 @@ use App\Http\Controllers\AgentController;
 // Route::get('/member', 'MemberController@index');
 
 // Route::get('/member/create', 'MemberController@memberCreate');
+Route::get('/clear-cache', function () {
+    $exitCode = Artisan::call('cache:clear');
+    $exitCode = Artisan::call('config:cache');
+    Cache::flush();
+    cache()->flush();
+    return 'DONE';
+});
 
 Route::get('/member/confirmation', [MemberController::class, 'memberConfirmation']);
 Route::get('/balance', [MemberController::class, 'balanceCheck']);
@@ -61,10 +70,12 @@ Route::get('/bet-history/details', [BetHistoryController::class, 'betHistoryDeta
 
 Route::get('/transaction', [TransactionController::class, 'index'])->name('transaction.index');
 Route::get('/transaction/list', [TransactionController::class, 'transactionList'])->name('transaction.list');
+Route::post('/transaction/log', [TransactionController::class, 'transactionLog'])->name('transaction.log');
 
 // AGENT
-Route::get('/agent', [AgentController::class, 'list'])->name('agent.list');
+Route::get('/agent', [AgentController::class, 'index'])->name('agent.index');
+Route::get('/agent-list', [AgentController::class, 'agentList'])->name('agent.list');
 Route::get('/create-agent', [AgentController::class, 'createAgent'])->name('agent.create');
 Route::post('/save-agent', [AgentController::class, 'saveAgent'])->name('agent.save');
 Route::post('/check-duplicate-agent', [AgentController::class, 'checkAgentDuplicate'])->name('agent.duplicate');
-Route::post('/agent-tree', [AgentController::class, 'populateAgentTree'])->name('agent.tree');
+Route::get('/agent-tree', [AgentController::class, 'populateAgentTree'])->name('agent.tree');

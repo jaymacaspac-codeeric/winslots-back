@@ -1,5 +1,10 @@
 @extends('template.template')
 
+@section('custom-css')
+<link href="../assets/plugins/toast-master/css/jquery.toast.css" rel="stylesheet">
+<link href="../assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+@endsection
+
 @section('agent-info')
     <li>
         <div class="d-flex m-t-10 justify-content-end">
@@ -63,21 +68,21 @@
                             User</a>
                     </div>
                     <div class="table-responsive">
-                        <table id="user_list_table1" class="display nowrap table table-hover table-striped table-bordered"
-                        cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                <th>번호</th>
-                                <th>소속 에이전트</th>
-                                <th>유저</th>
-                                <th>현재 보유금</th>
-                                <th>현재 보유포인트</th>
-                                <th>가입 시각</th>
-                                <th>최근 접속 시각</th>
-                                <th>관리</th>
-                            </tr>
-                        </thead>
-                    </table>
+                        <table id="user_list_table" class="display nowrap table table-hover table-striped table-bordered"
+                            cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>소속 에이전트</th>
+                                    <th>유저</th>
+                                    <th>현재 보유금</th>
+                                    <th>현재 보유포인트</th>
+                                    <th>가입 시각</th>
+                                    <th>최근 접속 시각</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -214,30 +219,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <script>
 
-        $.ajax({
-            url: "https://api.honorlink.org/api/user-list",
-            headers: {
-                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
-            },
-            type: 'GET',
-            success: function(data) {
-                bindtoDatatable(data);
-            }
-        });
-
-        function bindtoDatatable(data) {
-        var table = $('#user_list_table1').DataTable({
+        var table = $('#user_list_table').DataTable({
             dom: 'Bfrtip',
             buttons: [
                 'copy', 'excel', 'pdf', 'print'
             ],
             "bAutoWidth" : false,
-            "aaData" : data,
-            "columns" : [ {
-                "data" : "id"
+            "ajax": {
+                url: "https://api.honorlink.org/api/user-list",
+                headers: {
+                    'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD'
+                },
+                type: 'GET',
+                "dataSrc": function (json) {
+                    return json;
+                }
+            },
+            "columnDefs" : [ 
+            {
+                "targets": 0,
+                'render': function(data, type, full, meta) {
+                    // console.log(full)
+                    return full['id'];
+                }
             }, {
-                "data" : "agent_id"
-            }, {
+                "targets": 1,
+                'render': function(data, type, full, meta) {
+                    return full['agent_id'];
+                }
+            }, 
+            {
                 "targets": 2,
                 'render': function(data, type, full, meta) {
                     return '<a href="{{ url('user-list') }}/'+ full['username']+'">' + full['username'] + '</a>';
@@ -264,7 +275,7 @@
                     return full['last_access_at'] != null ? moment(full['last_access_at']).add(1, 'hour').format('YYYY-DD-MM HH:mm') : "";
                 }
             }, {
-                "targets": -1,
+                "targets": 7,
                 'render': function(data, type, full, meta) {
                 // return '<div style="width: 80px;color:#fff;"><a class="btn btn-info user-payment" data-toggle="modal" data-target="#userPayment" data-name="' + full[2] + '">충전</a></div>';
                 return '<div class="btn-group" role="group" aria-label="Charge In / Out" style="color:#fff;">' +
@@ -272,113 +283,17 @@
                         '<a class="btn btn-danger user-collect" data-toggle="modal" data-name=' + full['username'] + ' data-balance=' + full['balance'] + ' data-target="#userChargeOut">회수</a>' +
                         '</div>';
                 }
-            } ],
-
-                    "initComplete": function(settings, json) {
-                    $('.user-payment').on('click', function() {
-                        // var amount = $('.payment-amount').val();
-                        var username = $(this).data('name');
-                    });
+            } 
+        ],
+            "initComplete": function(settings, json) {
+                    // $('.user-payment').on('click', function() {
+                    //     // var amount = $('.payment-amount').val();
+                    //     var username = $(this).data('name');
+                    // });
 
                     function format_number(x) {
                         return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
                     }
-
-                    $('#userChargeIn').on('show.bs.modal', function(e) {
-                        var username = $(e.relatedTarget).data('name');
-                        var total_holdings = '{{ $balance }}'
-                        $('.submit-recharge').on('click', function() {
-                            var amount = $('.payment-amount').val();
-                            if (amount != 0) {
-                                if (total_holdings >= amount) {
-                                    $.ajax({
-                                        url: "https://api.honorlink.org/api/user/add-balance",
-                                        headers: {
-                                            'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
-                                        },
-                                        type: 'POST',
-                                        data: {
-                                            'amount': amount,
-                                            'username': username
-                                        },
-                                        beforeSend: function() {
-
-                                        },
-                                        success: function(data) {
-                                            console.log(data)
-                                            // var data = $.parseJSON(data);
-                                            // var transaction = data['recharge'];
-                                            // console.log(data);
-                                            // console.log(transaction);
-                                            if (data) {
-                                                $('.total-holding-balance').html(format_number(~~data['info']['data']['balance']));
-                                                $('.total-user-holding-balance').html(format_number(~~data['total_balance']));
-                                                swal("Success!", '' + transaction['data']['amount'] +' Pot Holding balance recharged successfully.',"success");
-                                            } else {
-                                                swal("Failed","차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다","error");
-                                            }
-                                            $('#userChargeIn').modal('hide');
-                                        }
-                                    })
-                                }
-                            }
-
-                        });
-                        console.log(username);
-                    });
-
-                    $('#userChargeOut').on('show.bs.modal', function(e) {
-                        var username = $(e.relatedTarget).data('name');
-                        var balance = $(e.relatedTarget).data('balance');
-
-                        $('.submit-collect').on('click', function() {
-                            var collect_amount = $('.collect-amount').val();
-                            if (collect_amount != 0) {
-                                // if(balance > amount) {
-                                $.ajax({
-                                    url: "{{ url('/collect') }}",
-                                    type: 'POST',
-                                    data: {
-                                        'amount': collect_amount,
-                                        'username': username
-                                    },
-                                    beforeSend: function() {
-
-                                    },
-                                    success: function(data) {
-                                        var data = $.parseJSON(data);
-                                        var transaction = data['collect'];
-                                        var collected_amount = transaction['data']['amount'];
-                                        console.log(transaction);
-                                        if (transaction['status_code'] == 200) {
-                                            $('.total-holding-balance').html(format_number(~~data['info']['data']['balance']));
-                                            $('.total-user-holding-balance').html(format_number(~~data['total_balance']));
-
-                                            swal("Success!", '' + collected_amount +' Pot Holding balance collected successfully.',"success");
-                                        } else {
-                                            swal("Failed","차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다","error");
-                                        }
-                                        $('#userChargeOut').modal('hide');
-                                    }
-                                })
-                                // } else {
-                                //     // console.log('차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다.');
-                                //     swal("Failed", "차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다)", "error");
-                                //     $('#userChargeOut').modal('hide');
-                                // }
-                            }
-
-                        });
-                    });
-
-                    $('#userChargeIn').on('hidden.bs.modal', function() {
-                        location.reload();
-                        // table.ajax.reload();
-                    });
-                    $('#userChargeOut').on('hidden.bs.modal', function() {
-                        // table.ajax.reload();
-                        location.reload();
-                    });
 
                     var is_checked = false;
                     var is_duplicate = false;
@@ -479,264 +394,182 @@
                         }
                     });
                 }
-        })
+        });
+
+        var username_recharge = '';
+        var amount = 0;
+
+        $('#userChargeIn').on('show.bs.modal', function(e) {
+            username_recharge = $(e.relatedTarget).data('name');
+            $('.submit-recharge').on('click', function() {
+                amount = $('.payment-amount').val();
+                if (amount != 0) {
+                    // if (total_holdings > amount) {
+                        $.ajax({
+                            url: "https://api.honorlink.org/api/user/add-balance",
+                            headers: {
+                                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+                            },
+                            type: 'POST',
+                            data: {
+                                'amount': amount,
+                                'username': username_recharge
+                            },
+                            beforeSend: function() {
+
+                            },
+                            success: function(data) {
+                                console.log(data)
+                                            // var data = $.parseJSON(data);
+                                            // var transaction = data['recharge'];
+                                            // console.log(data);
+                                            // console.log(transaction);
+                                if (data) {
+                                    updateTotalBalance();
+
+                                    $.ajax({
+                                        url: "{{ url('/transaction/log') }}",
+                                        type: 'POST',
+                                        data: {
+                                            'trans_id': data['transaction_id'],
+                                            'amount': data['amount'],
+                                            'after': data['balance'],
+                                            'user': data['username'],
+                                            'type': 'deposit',
+                                            'status': '1'
+                                        },
+                                        beforeSend: function() {
+
+                                        },
+                                        success: function(data) {
+
+                                        }
+                                    })
+
+                                                // $('.total-holding-balance').html(format_number(~~data['info']['data']['balance']));
+                                                // $('.total-user-holding-balance').html(format_number(~~data['total_balance']));
+                                    swal("Success!", '' + data['amount'] +' Pot Holding balance recharged successfully.',"success");
+                                } else {
+                                    // swal("Failed","차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다","error");
+                                }
+                                    $('#userChargeIn').modal('hide');
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                console.log(jqXHR.status);
+                                $('#betDetails').modal('hide');
+                                swal("Failed", "에이전트의 잔고가 부족합니다.", "error");
+                            }
+                        })
+                    // }
+                }
+
+            });
+                console.log(username);
+        });
+
+        $('#userChargeIn').on('hidden.bs.modal', function() {
+            // location.reload();
+            table.ajax.reload();
+            username_recharge = '';
+            $('.payment-amount').val('');
+            amount = 0;
+        });
+
+        var username = '';
+        var _balance = '';
+        var collect_amount = 0;
+        $('#userChargeOut').on('show.bs.modal', function(e) {
+            username = $(e.relatedTarget).data('name');
+            _balance = $(e.relatedTarget).data('balance');
+
+            $('.submit-collect').on('click', function() {
+                collect_amount = $('.collect-amount').val();
+                if (collect_amount != 0) {
+                    if(collect_amount > _balance) {
+                        swal("Failed", "차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다", "error");
+                        $('#userChargeOut').modal('hide');
+                    } else {
+                                // if(balance > amount) {
+                        $.ajax({
+                            url: "https://api.honorlink.org/api/user/sub-balance",
+                            headers: {
+                                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+                            },
+                            type: 'POST',
+                            data: {
+                               'amount': collect_amount,
+                                'username': username
+                            },
+                            beforeSend: function() {
+
+                            },
+                            success: function(data) {
+                                console.log(data);
+                                        // var data = $.parseJSON(data);
+                                        // var transaction = data['collect'];
+                                var collected_amount = data['amount'];
+                                        // console.log(transaction);
+                                if (data) {
+                                    updateTotalBalance();
+                                            // $('.total-holding-balance').html(format_number(~~data['info']['data']['balance']));
+                                            // $('.total-user-holding-balance').html(format_number(~~data['total_balance']));
+
+                                    swal("Success!", '' + collected_amount +' Pot Holding balance collected successfully.',"success");
+                                } else {
+                                    swal("Failed","차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다","error");
+                                }
+                                $('#userChargeOut').modal('hide');
+                            }
+                        });
+
+                                // } else {
+                                //     // console.log('차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다.');
+                                //     swal("Failed", "차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다)", "error");
+                                //     $('#userChargeOut').modal('hide');
+                                // }
+                    }
+                }
+            });
+        });
+
+
+        $('#userChargeOut').on('hidden.bs.modal', function() {
+            table.ajax.reload();
+            username = '';
+            _balance = '';
+            $('.collect-amount').val('');
+            collect_amount = 0;
+            // location.reload();
+        });
+
+    function updateTotalBalance() {
+        $.ajax({
+            async: true,
+            url: "https://api.honorlink.org/api/my-info",
+            headers: {
+                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+            },
+            type: 'GET',
+            success: function(data) {
+                $('.total-holding-balance').text(data['balance'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
+            }
+        });
+
+        $.ajax({
+            async: true,
+            url: "https://api.honorlink.org/api/user-list",
+            headers: {
+                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+            },
+            type: 'GET',
+            success: function(data) {
+                var total = data.reduce(function(sum, current) {
+                                return sum + current.balance;
+                            }, 0);
+
+                $('.total-user-holding-balance').text(total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
+            }
+        });
     }
-        // var table =
-        //     $('#user_list_table').DataTable({
-        //         dom: 'Bfrtip',
-        //         buttons: [
-        //             'copy', 'excel', 'pdf', 'print'
-        //         ],
-        //         responsive: true,
-        //         "ajax": {
-        //             "url": '{{ url('/get-user-list') }}',
-        //         },
-        //         "columnDefs": [{
-        //                 "targets": 1,
-        //                 'render': function(data, type, full, meta) {
-        //                     return '<a href="{{ url('user-list') }}/'+ full[1]+'">' + data + '</a>';
-        //                 }
-        //             },
-        //             {
-        //                 "targets": 2,
-        //                 'render': function(data, type, full, meta) {
-        //                     return data == 2838 ? "great game" : data;
-        //                 }
-        //             },
-        //             {
-        //                 "targets": 3,
-        //                 'render': function(data, type, full, meta) {
-        //                     return data + " Pot";
-        //                 }
-        //             },
-        //             {
-        //                 "targets": 4,
-        //                 'render': function(data, type, full, meta) {
-        //                     return data + " P";
-        //                 }
-        //             },
-        //             {
-        //                 "targets": 5,
-        //                 'render': function(data, type, full, meta) {
-        //                     return moment(data).format('MM/DD/YYYY h:mm');
-        //                 }
-        //             },
-        //             {
-        //                 "targets": 6,
-        //                 'render': function(data, type, full, meta) {
-        //                     return data != "" ? moment(data).format('MM/DD/YYYY h:mm') : "";
-        //                 }
-        //             },
-        //             {
-        //                 "targets": -1,
-        //                 'render': function(data, type, full, meta) {
-        //                     // return '<div style="width: 80px;color:#fff;"><a class="btn btn-info user-payment" data-toggle="modal" data-target="#userPayment" data-name="' + full[2] + '">충전</a></div>';
-        //                     return '<div class="btn-group" role="group" aria-label="Charge In / Out" style="color:#fff;">' +
-        //                         '<a class="btn btn-info user-payment" data-toggle="modal" data-name=' + full[1] + ' data-target="#userChargeIn">충전</a>' +
-        //                         '<a class="btn btn-danger user-collect" data-toggle="modal" data-name=' + full[1] + ' data-balance=' + full[3] + ' data-target="#userChargeOut">회수</a>' +
-        //                         '</div>';
-        //                 }
-        //             }
-        //         ],
-        //         "initComplete": function(settings, json) {
-        //             $('.user-payment').on('click', function() {
-        //                 // var amount = $('.payment-amount').val();
-        //                 var username = $(this).data('name');
-        //             });
-
-        //             function format_number(x) {
-        //                 return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-        //             }
-
-        //             $('#userChargeIn').on('show.bs.modal', function(e) {
-        //                 var username = $(e.relatedTarget).data('name');
-        //                 var total_holdings = '{{ $balance }}'
-        //                 $('.submit-recharge').on('click', function() {
-        //                     var amount = $('.payment-amount').val();
-        //                     if (amount != 0) {
-        //                         if (total_holdings >= amount) {
-        //                             $.ajax({
-        //                                 url: "{{ url('/recharge') }}",
-        //                                 type: 'POST',
-        //                                 data: {
-        //                                     'amount': amount,
-        //                                     'username': username
-        //                                 },
-        //                                 beforeSend: function() {
-
-        //                                 },
-        //                                 success: function(data) {
-        //                                     var data = $.parseJSON(data);
-        //                                     var transaction = data['recharge'];
-        //                                     console.log(data);
-        //                                     console.log(transaction);
-        //                                     if (transaction['status_code'] == 200) {
-        //                                         $('.total-holding-balance').html(format_number(~~data['info']['data']['balance']));
-        //                                         $('.total-user-holding-balance').html(format_number(~~data['total_balance']));
-        //                                         swal("Success!", '' + transaction['data']['amount'] +' Pot Holding balance recharged successfully.',"success");
-        //                                     } else {
-        //                                         swal("Failed","차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다","error");
-        //                                     }
-        //                                     $('#userChargeIn').modal('hide');
-        //                                 }
-        //                             })
-        //                         }
-        //                     }
-
-        //                 });
-        //                 console.log(username);
-        //             });
-
-        //             $('#userChargeOut').on('show.bs.modal', function(e) {
-        //                 var username = $(e.relatedTarget).data('name');
-        //                 var balance = $(e.relatedTarget).data('balance');
-
-        //                 $('.submit-collect').on('click', function() {
-        //                     var collect_amount = $('.collect-amount').val();
-        //                     if (collect_amount != 0) {
-        //                         // if(balance > amount) {
-        //                         $.ajax({
-        //                             url: "{{ url('/collect') }}",
-        //                             type: 'POST',
-        //                             data: {
-        //                                 'amount': collect_amount,
-        //                                 'username': username
-        //                             },
-        //                             beforeSend: function() {
-
-        //                             },
-        //                             success: function(data) {
-        //                                 var data = $.parseJSON(data);
-        //                                 var transaction = data['collect'];
-        //                                 var collected_amount = transaction['data']['amount'];
-        //                                 console.log(transaction);
-        //                                 if (transaction['status_code'] == 200) {
-        //                                     $('.total-holding-balance').html(format_number(~~data['info']['data']['balance']));
-        //                                     $('.total-user-holding-balance').html(format_number(~~data['total_balance']));
-
-        //                                     swal("Success!", '' + collected_amount +' Pot Holding balance collected successfully.',"success");
-        //                                 } else {
-        //                                     swal("Failed","차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다","error");
-        //                                 }
-        //                                 $('#userChargeOut').modal('hide');
-        //                             }
-        //                         })
-        //                         // } else {
-        //                         //     // console.log('차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다.');
-        //                         //     swal("Failed", "차감할 금액에 비해 해당 유저의 보유 금액이 부족합니다)", "error");
-        //                         //     $('#userChargeOut').modal('hide');
-        //                         // }
-        //                     }
-
-        //                 });
-        //             });
-
-        //             $('#userChargeIn').on('hidden.bs.modal', function() {
-        //                 table.ajax.reload();
-        //             });
-        //             $('#userChargeOut').on('hidden.bs.modal', function() {
-        //                 table.ajax.reload();
-        //             });
-
-        //             var is_checked = false;
-        //             var is_duplicate = false;
-
-        //             $('.check-user').on('click', function() {
-        //                 var username = $('.username').val();
-        //                 if (username != '') {
-        //                     $.ajax({
-        //                         url: "{{ url('/check-user') }}/" +username,
-        //                         type: 'GET',
-        //                         beforeSend: function() {
-        //                             $('.username-loading').css('display', 'block');
-        //                             $('.username').attr('disabled', true);
-        //                             $('.check-label').text('Checking...');
-        //                             $('.text_user_chk').text('Processing.');
-        //                             is_checked = false;
-        //                         },
-        //                         success: function(data) {
-        //                             is_checked = true;
-        //                             $('.username-loading').css('display', 'none');
-        //                             $('.username').attr('disabled', false);
-        //                             $('.check-label').text('Check');
-        //                             var result = $.parseJSON(data);
-        //                             if (result['status_code'] == 200) {
-        //                                 $('.text_user_chk').text('이미 사용중입니다.').addClass('text-danger');
-        //                                 is_duplicate = true;
-        //                             } else {
-        //                                 $('.text_user_chk').text('사용가능합니다.').removeClass('text-danger');
-        //                                 is_duplicate = false;
-        //                             }
-        //                         }
-        //                     })
-        //                 }
-        //             });
-
-        //             $.ajaxSetup({
-        //                 headers: {
-        //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //                 }
-        //             });
-        //             $('.new_user').on('click', function() {
-        //                 if (is_checked == true) {
-        //                     if (is_duplicate == false) {
-        //                         var data = $('.create-user-form').serialize();
-        //                         var username = $('.username').val();
-        //                         var nickname = $('.nickname').val();
-        //                         var pw = $('.password').val();
-        //                         var email = $('.email').val();
-        //                         $.ajax({
-        //                             url: "https://api.honorlink.org/api/user/create",
-        //                             headers: {
-        //                                 'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
-        //                             },
-        //                             type: 'POST',
-        //                             data: {
-        //                                 'username': username,
-        //                                 'nickname': nickname
-        //                             },
-        //                             success: function(data) {
-        //                                 console.log(data);
-        //                                 if(data) {
-        //                                     $.ajax({
-        //                                         url: "{{ url('/create-user') }}",
-        //                                         type: 'POST',
-        //                                         data: {
-        //                                             'username': username,
-        //                                             'nickname': nickname,
-        //                                             'password' : pw,
-        //                                             'email' : email,
-        //                                             'user_id' : data['id'],
-        //                                             'balance' : data['balance'],
-        //                                             'point' : data['point'],
-        //                                             'created_at' : data['created_at']
-        //                                         },
-        //                                         success: function(data) {
-        //                                             if (data == 'success') {
-        //                                                 $('#userModal').modal('hide');
-        //                                                 table.ajax.reload();
-        //                                                 swal("Success!", 'User created successfully.', "success");
-        //                                                 // $.toast({
-        //                                                 //     heading: 'Success',
-        //                                                 //     text: 'User created successfully.',
-        //                                                 //     position: 'top-right',
-        //                                                 //     loaderBg: '#ff6849',
-        //                                                 //     icon: 'success',
-        //                                                 //     hideAfter: 3500,
-        //                                                 //     stack: 6
-        //                                                 // });
-        //                                             }
-        //                                         }
-        //                                     });
-        //                                 }
-        //                             }
-        //                         });
-        //                     } else {
-
-        //                     }
-        //                 }
-        //             });
-        //         }
-        //     });
     </script>
 @endsection

@@ -131,7 +131,7 @@
             },
             type: 'GET',
             success: function(data) {
-                $('.dashboard-total-balance').text(data['balance'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
+                $('.dashboard-total-balance').text(parseInt(data['balance']).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
             }
         });
         $.ajax({

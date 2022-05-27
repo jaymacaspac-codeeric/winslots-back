@@ -34,7 +34,10 @@
             <div class="d-flex m-l-10 hidden-md-down">
                 <div class="chart-text m-r-10">
                     <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-holding-balance"> {{ number_format($balance, 0) }} </span> Pot</span></h4>
+                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-holding-balance"> 
+                        {{-- {{ number_format($balance, 0) }} 
+                    </span> Pot</span> --}}
+                </h4>
                 </div>
                 <div class="spark-chart">
                     <div id="monthchart"></div>
@@ -48,7 +51,10 @@
             <div class="d-flex m-l-10 hidden-md-down">
                 <div class="chart-text m-r-10">
                     <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-user-holding-balance"> {{ number_format($totalBalance), 0 }} </span> Pot</span></h4>
+                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-user-holding-balance"> 
+                        {{-- {{ number_format($totalBalance), 0 }} 
+                    </span> Pot</span> --}}
+                </h4>
                 </div>
                 <div class="spark-chart">
                     <div id="monthchart"></div>
@@ -90,15 +96,15 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table id="transaction_history_table" class="transaction_history_table display table table-hover table-bordered" cellspacing="0" width="100%" style="font-size: 14px;">
+                        <table id="agent_list_table" class="transaction_history_table display table table-hover table-bordered" cellspacing="0" width="100%" style="font-size: 14px;">
                             <thead>
                                 <tr>
                                     <th>번호</th>
-                                    <th>대상자 (에이전트/유저)</th>
-                                    <th>타입</th>
-                                    <th>변동 전 잔액</th>
-                                    <th>변동 금액</th>
-                                    <th>변동 후 잔액</th>
+                                    <th>Agent ID</th>
+                                    <th>Rate</th>
+                                    <th>Commision</th>
+                                    <th>Balance</th>
+                                    <th>Affiliated Agent</th>
                                     <th>처리 시각</th>
                                     <th>상태</th>
                                 </tr>
@@ -194,8 +200,6 @@
     <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 
-    <script src="{{ URL::asset('custom/js/agent.js') }}"></script>
-
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
@@ -205,6 +209,68 @@
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <script>
+        var table = $('#agent_list_table').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            "bAutoWidth" : false,
+            "ajax": {
+                url: "{{ url('/agent-list') }}",
+            },
+            "columnDefs" : [ 
+            // {
+            //     "targets": 0,
+            //     'render': function(data, type, full, meta) {
+            //         // console.log(full)
+            //         return full['id'];
+            //     }
+            // }, {
+            //     "targets": 1,
+            //     'render': function(data, type, full, meta) {
+            //         return full['agent_id'];
+            //     }
+            // }, 
+            // {
+            //     "targets": 2,
+            //     'render': function(data, type, full, meta) {
+            //         return '<a href="{{ url('user-list') }}/'+ full['username']+'">' + full['username'] + '</a>';
+            //     }
+            // }, {
+            //     "targets": 3,
+            //     'render': function(data, type, full, meta) {
+            //         return full['balance'] + " Pot";
+            //     }
+            // }, {
+            //     "targets": 4,
+            //     'render': function(data, type, full, meta) {
+            //         return full['point'] + " P";
+            //     }
+            // }, {
+            //     "targets": 5,
+            //     'render': function(data, type, full, meta) {
+            //         // return full['created_at'];
+            //         return moment(full['created_at']).add(1, 'hour').format('YYYY-DD-MM HH:mm');
+            //     }
+            // }, {
+            //     "targets": 6,
+            //     'render': function(data, type, full, meta) {
+            //         return full['last_access_at'] != null ? moment(full['last_access_at']).add(1, 'hour').format('YYYY-DD-MM HH:mm') : "";
+            //     }
+            // }, {
+            //     "targets": 7,
+            //     'render': function(data, type, full, meta) {
+            //     // return '<div style="width: 80px;color:#fff;"><a class="btn btn-info user-payment" data-toggle="modal" data-target="#userPayment" data-name="' + full[2] + '">충전</a></div>';
+            //     return '<div class="btn-group" role="group" aria-label="Charge In / Out" style="color:#fff;">' +
+            //             '<a class="btn btn-info user-payment" data-toggle="modal" data-name=' + full['username'] + ' data-target="#userChargeIn">충전</a>' +
+            //             '<a class="btn btn-danger user-collect" data-toggle="modal" data-name=' + full['username'] + ' data-balance=' + full['balance'] + ' data-target="#userChargeOut">회수</a>' +
+            //             '</div>';
+            //     }
+            // } 
+        ],
+            "initComplete": function(settings, json) {
 
+                }
+        });
     </script>
 @endsection

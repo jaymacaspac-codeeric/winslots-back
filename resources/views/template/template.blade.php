@@ -234,7 +234,7 @@
                             </li>
                             <li class="{{ (request()->is('user*')) ? 'active' : '' }}"> <a href="{{ url('/user-list') }}"><i class="mdi mdi-account-multiple"></i><span class="hide-menu">User List </span></a> </li>
                             <li class="{{ (request()->is('bet*')) ? 'active' : '' }}"> <a href="{{ url('/bet-history') }}"><i class="mdi mdi-gamepad-variant"></i><span class="hide-menu">Betting History </span></a> </li>
-                        <li class="nav-small-cap">Admin</li>
+                        {{-- <li class="nav-small-cap">Admin</li> --}}
                             <!-- <li class=""> <a href="admin.php"><i class="mdi mdi-account-box"></i><span class="hide-menu">Admin List </span></a> </li> -->
                             <li class="{{ (request()->is('transaction*')) ? 'active' : '' }}"> <a href="{{ url('/transaction') }}"><i class="mdi mdi-account-box"></i><span class="hide-menu">Transaction History </span></a> </li>
                     </ul>
@@ -325,7 +325,7 @@
             },
             type: 'GET',
             success: function(data) {
-                $('.total-holding-balance').text(data['balance'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
+                $('.total-holding-balance').text(parseInt(data['balance']).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' Pot');
             }
         });
 

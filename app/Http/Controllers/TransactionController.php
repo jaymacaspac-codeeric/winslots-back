@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
@@ -15,12 +16,12 @@ class TransactionController extends Controller
 
     public function index(Request $request) {
         if($request->session()->has('username')) {
-            $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
-            $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
+            // $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
+            // $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
             
             return view('transaction.index', array(
-                'balance' => $balance,
-                'totalBalance' => $total_user_balance,
+                // 'balance' => $balance,
+                // 'totalBalance' => $total_user_balance,
             ));
         } else {
             return redirect('/');
@@ -45,8 +46,8 @@ class TransactionController extends Controller
 	}
 
     public function transactionList() {
-        $start = '2022-05-01 11:18:52';
-        $end = '2022-05-16 11:18:52';
+        $start = '2022-05-16 11:18:52';
+        $end = '2022-05-25 11:18:52';
         $page = '1';
         $perPage = '1000';
         $withDetails = '0';
@@ -82,5 +83,33 @@ class TransactionController extends Controller
 
         $data = $this->format_datatable($transaction, $totalRecords, $fieldNames);
         return $data;
+    }
+
+    public function transactionLog() {
+        $agent = session('agent_id');
+        $date = date("Y-m-d H:i:s",	time());
+
+        $trans_id = $_POST['trans_id'];
+        $target_user = $_POST['user'];
+        $type = $_POST['type'];
+        $amount = $_POST['amount'];
+        // $before = $_POST['before'];
+        $after = $_POST['after'];
+        $status = $_POST['status'];
+
+        $log = DB::table('log_transaction')->insert([
+            'agent'             => $agent,
+            'transaction_id'    => $trans_id,
+            'target_user'       => $target_user,
+            'type'              => $type,
+            'amount'            => $amount,
+            // 'balance_before'    => (int) $before,
+            'balance_after'     => (int) $after,
+            'status'            => $status,
+            'date'              => $date
+        ]);
+        if($log) {
+            return 'success';
+        }
     }
 }

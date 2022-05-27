@@ -19,12 +19,12 @@ class UserController extends Controller
 
     public function userList(Request $request) {
         if($request->session()->has('username')) {
-            $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
-            $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
+            // $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
+            // $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
     
             return view('user.list', array(
-                'balance' => $balance,
-                'totalBalance' => $total_user_balance,
+                // 'balance' => $balance,
+                // 'totalBalance' => $total_user_balance,
             ));
         } else {
             return redirect('/');
@@ -58,17 +58,16 @@ class UserController extends Controller
 	}
 
     public function getUserInfo($username) {
-        $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user', [
-            'username' => $username
-        ]);
+        // $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user', [
+        //     'username' => $username
+        // ]);
 
-        $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
-        $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
-		
+        // $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
+        // $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
         return view('user.info', array(
-            'balance' => $balance,
-            'totalBalance' => $total_user_balance,
-            'user_info' => $user
+            // 'balance' => $balance,
+            // 'totalBalance' => $total_user_balance,
+            // 'user_info' => $user,
         ));
     }
 
