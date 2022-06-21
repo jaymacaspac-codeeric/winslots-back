@@ -97,7 +97,7 @@ class TransactionController extends Controller
         $after = $_POST['after'];
         $status = $_POST['status'];
 
-        $log = DB::table('log_transaction')->insert([
+        $log = DB::table('log_deposit')->insert([
             'agent'             => $agent,
             'transaction_id'    => $trans_id,
             'target_user'       => $target_user,

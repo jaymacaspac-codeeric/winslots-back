@@ -32,13 +32,16 @@ class UserController extends Controller
     }
 
     public function getUserList() {
-        $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
+        // $user = Http::withToken($this->api_key)->get('https://api.honorlink.org/api/user-list');
        
-        $totalRecords = count(json_decode((string) $user->getBody(), true));
-        $fieldNames = array("id","username","agent_id", "balance", "point", "created_at", "last_access_at", "username", "nickname");
-        $data = $this->format_datatable1(json_decode((string) $user->getBody(), true), $totalRecords, $fieldNames);
-    
-        return $data;
+        // $totalRecords = count(json_decode((string) $user->getBody(), true));
+        // $fieldNames = array("id","username","agent_id", "balance", "point", "created_at", "last_access_at", "username", "nickname");
+        // $data = $this->format_datatable1(json_decode((string) $user->getBody(), true), $totalRecords, $fieldNames);
+        $user = DB::table('info_users')
+                ->where('agent_id', session('agent_id'))
+                ->get();
+                
+        return $user;
     }
 
     public function searchUser($array, $key, $value) {
@@ -178,16 +181,16 @@ class UserController extends Controller
         $email      = isset($_POST['email'])        ? $_POST['email']       : "";
 
         $user = DB::table('info_users')->insert([
-            'user_id' => $_POST['user_id'],
-            'username' => $username,
-            'nickname' => $nickname,
-            'user_pw' => md5($pass),
-            'agent_id' => session('agent_id'),
-            'email' => $email,
-            'balance' => $_POST['balance'],
-            'point' => $_POST['point'],
-            'created_at' => $_POST['created_at'],
-            'status' => '1'
+            'user_id'       => $_POST['user_id'],
+            'username'      => $username,
+            'nickname'      => $nickname,
+            'user_pw'       => md5($pass),
+            'agent_id'      => session('agent_id'),
+            'email'         => $email,
+            'balance'       => $_POST['balance'],
+            'point'         => $_POST['point'],
+            'created_at'    => $_POST['created_at'],
+            'status'        => '1'
         ]);
         if($user) {
             return 'success';
@@ -197,12 +200,12 @@ class UserController extends Controller
     }
 
     public function recharge() {
-        $amount = $_POST['amount'];
-        $username = $_POST['username'];
+        $amount     = $_POST['amount'];
+        $username   = $_POST['username'];
 
         $add_balance = Http::withToken($this->api_key)->post('https://api.honorlink.org/api/user/add-balance', [
             'amount'     => $amount,
-            'username'     => $username
+            'username'   => $username
         ]);
 
         return $add_balance;

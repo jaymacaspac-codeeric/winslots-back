@@ -23,8 +23,8 @@ class MemberController extends Controller
         $get_user = $_GET['userid'];
 
         $user = DB::table('info_users')
-        ->where('username', $get_user)
-        ->first();
+                ->where('username', $get_user)
+                ->first();
 
         $balance = 0;    
 
@@ -54,11 +54,11 @@ class MemberController extends Controller
     }
 
     public function balanceCheck() {
-        $get_user = $_GET['userid'];
+        $get_user = $_GET['username'];
 
         $user = DB::table('info_users')
-            ->where('username', $get_user)
-            ->first();
+                ->where('username', $get_user)
+                ->first();
 
         $balance = 0;    
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class BetHistoryController extends Controller
 {
@@ -12,7 +13,7 @@ class BetHistoryController extends Controller
             // $balance = $this->getAgentInfo() != 'Server Error' ? $this->getAgentInfo()['balance'] : 0 ;
             // $total_user_balance = $this->getTotalUserBalance() != 'Server Error' ? $this->getTotalUserBalance() : 0;
     
-           return view('bet-history.index', array(
+           return view('bet_history.index', array(
                 // 'balance' => $balance,
                 // 'totalBalance' => $total_user_balance,
             ));

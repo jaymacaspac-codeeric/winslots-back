@@ -3,6 +3,8 @@
 @section('custom-css')
 <link href="../assets/plugins/toast-master/css/jquery.toast.css" rel="stylesheet">
 <link href="../assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+<link href="{{ URL::asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') }}" rel="stylesheet">
+
 <style>
     .bet_history_table thead th {
         /* font-size: 12px; */
@@ -27,54 +29,16 @@
 </style>
 @endsection
 
-@section('agent-info')
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-holding-balance">
-                                {{-- {{ number_format($balance, 0) }}
-                            </span> Pot</span> --}}
-                        </h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-user-holding-balance">
-                                {{-- {{ number_format($totalBalance), 0 }}
-                            </span> Pot</span> --}}
-                        </h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-@endsection
 
 @section('breadcrumb')
     <div class="row page-titles">
         <div class="col-md-5 align-self-center">
-            <h3 class="text-themecolor">User List</h3>
+            <h3 class="text-themecolor">Bet History</h3>
         </div>
         <div class="col-md-7 align-self-center">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                <li class="breadcrumb-item active">User List</li>
+                <li class="breadcrumb-item active">Bet History</li>
             </ol>
         </div>
     </div>
@@ -93,6 +57,22 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <span class="input-group-text">기간</span>
+                                    </div>
+                                    <input type="text" class="form-control start-date" value="" placeholder="yyyy-mm-dd">
+                                    <span class="input-group-addon bg-info b-0 text-white">to</span>
+                                    <input type="text" class="form-control end-date" value="" placeholder="yyyy-mm-dd">
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <a class="btn btn-info m-b-10 text-white search-by-date">Search</a>
+                            </div>
+                        </div>
+                        
                         <table id="bet_history_table" class="bet_history_table display table table-hover table-bordered" cellspacing="0" width="100%" style="font-size: 14px;">
                             <thead>
                                 <tr>
@@ -134,6 +114,7 @@
     <script src="{{ URL::asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ URL::asset('assets/plugins/toast-master/js/jquery.toast.js') }}"></script>
     <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+    <script src="{{ URL::asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
 
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
@@ -144,6 +125,33 @@
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <script>
+        var start = moment().subtract(14, 'days').format('YYYY-MM-DD');
+        var end = moment().format('YYYY-MM-DD');
+        
+        $('.start-date').val(start);
+        $('.end-date').val(end);
+
+        $('.start-date').datepicker({
+            format: 'yyyy-mm-dd',
+            // startDate: '-14d',
+            toggleActive: true,
+            // todayHighlight: true
+        }).on('changeDate', function(e) {
+            start = $(this).val();
+        });
+
+        $('.end-date').datepicker({
+            format: 'yyyy-mm-dd',
+            toggleActive: true,
+        }).on('changeDate', function(e) {
+            end = $(this).val();
+        });
+
+        $('.search-by-date').on('click', function() {
+            console.log(table);
+            table.ajax.reload();
+        });
+
         var table =
             $('#bet_history_table').DataTable({
                 dom: 'Bfrtip',
@@ -168,25 +176,17 @@
                         'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
                     },
                     type: 'GET',
-                    data: {
-                        start: '2022-05-08 11:18:52',
-                        end: '2022-05-16 11:18:52',
-                        page: '1',
-                        perPage: '1000'
+                    "data"   : function( d ) {
+                        d.start     = start + ' 00:00:00';
+                        d.end       = end + ' 23:59:59';
+                        d.page      = '1';
+                        d.perPage   = '1000';
                     },
                     "dataSrc": function (json) {
                         const chunk = (arr, size) =>
                                         Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
                                             arr.slice(i * size, i * size + size)
                                         );
-                        // var return_data = new Array();
-                        // for(var i=0;i< json.length; i++){
-                        //     return_data.push({
-                        //     'title': json[i].title,
-                        //     'url'  : '<img src="' + json[i].url + '">',
-                        //     'date' : json[i].date
-                        //     })
-                        // }
                         return chunk(json['data'], 2);
                     }
                 },

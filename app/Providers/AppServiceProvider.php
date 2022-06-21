@@ -29,6 +29,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        view()->composer('template.template', function ($view) {
+            $view->with([
+                'rate'           => getAgentRate(),
+                'admin'          => getAdmin(),
+                'paymentMethod'  => getPaymentMethod()
+            ]);
+        });
     }
 }

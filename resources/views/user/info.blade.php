@@ -27,45 +27,6 @@
 </style>
 @endsection
 
-@section('agent-info')
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-holding-balance">
-                                {{-- {{ number_format($balance, 0) }}
-                            </span> Pot</span> --}}
-                        </h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-user-holding-balance">
-                                {{-- {{ number_format($totalBalance), 0 }}
-                            </span> Pot</span> --}}
-                        </h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-@endsection
-
 @section('breadcrumb')
     <div class="row page-titles">
         <div class="col-md-5 align-self-center">
@@ -101,18 +62,16 @@
                     <div class="input-group">
                         <input type="hidden" value="">
                         <input type="text" name="passw" class="form-control pw" placeholder="Password">
-                        <a href="javascript:void(0)" class="input-group-addon btn btn-danger change-password"
-                            style="color:#fff;"><i class="fa fa-refresh fa-spin password-loading"
-                                style="display: none;"></i>&nbsp; <span class="check-label"> Change</span></a>
+                        <a href="javascript:void(0)" class="input-group-addon btn btn-danger change-password" style="color:#fff;"><i class="fa fa-refresh fa-spin password-loading" style="display: none;"></i>&nbsp; <span class="check-label"> Change</span></a>
                     </div>
                     <small class="text-muted p-t-30 db">Last Login </small>
-                    <h6 class="last-login">
+                        <h6 class="last-login">
                         {{-- {{ date("Y-m-d H:i", strtotime($user_info['last_access_at'])) }} --}}
-                    </h6>
+                        </h6>
                     <small class="text-muted p-t-30 db">Created Date</small>
-                    <h6 class="created-at">
+                        <h6 class="created-at">
                         {{-- {{ date("Y-m-d H:i", strtotime($user_info['created_at'])) }} --}}
-                    </h6>
+                        </h6>
                     <small class="text-muted p-t-30 db">Holding Money</small>
                     <div>
                         <span class="font-weight-bold user-holding-money">
@@ -133,8 +92,7 @@
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs profile-tab" role="tablist">
                     <!-- <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#home" role="tab">Timeline</a> </li> -->
-                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#bethistory"
-                            role="tab">Bet History</a> </li>
+                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#bethistory" role="tab">Bet History</a> </li>
                     <!-- <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#settings" role="tab">Settings</a> </li> -->
                 </ul>
                 <!-- Tab panes -->
@@ -147,9 +105,7 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table id="bet_history_table"
-                                                    class="bet_history_table display nowrap table table-hover table-bordered"
-                                                    cellspacing="0" width="100%">
+                                                <table id="bet_history_table" class="bet_history_table display nowrap table table-hover table-bordered" cellspacing="0" width="100%">
                                                     <thead>
                                                         <tr>
                                                             <th>Number</th>
@@ -181,8 +137,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="exampleModalLabel1">New User</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form class="form p-t-20 create-user-form">
@@ -190,29 +145,25 @@
                             <label for="exampleInputuname2">User Name*</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" name="username" class="form-control username" placeholder="Username"
-                                    required>
-                                <a class="input-group-addon btn btn-warning check-user" style="color:#fff;"><i
-                                        class="fa fa-refresh fa-spin username-loading" style="display: none;"></i>&nbsp;
-                                    <span class="check-label"> Check</span></a>
+                                <input type="text" name="username" class="form-control username" placeholder="Username" required>
+                                <a class="input-group-addon btn btn-warning check-user" style="color:#fff;"><i class="fa fa-refresh fa-spin username-loading" style="display: none;"></i>&nbsp;
+                                    <span class="check-label"> Check</span>
+                                </a>
                             </div>
-                            <span class="help-block m-b-none text-danger text_user_chk" id="text_user_chk">중복된 사용자 이름 확인이
-                                필요합니다.</span>
+                            <span class="help-block m-b-none text-danger text_user_chk" id="text_user_chk">중복된 사용자 이름 확인이필요합니다.</span>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputpwd2">Password*</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-lock"></i></div>
-                                <input type="password" name="password" autocomplete="off" class="form-control password"
-                                    placeholder="Password" required>
+                                <input type="password" name="password" autocomplete="off" class="form-control password" placeholder="Password" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputpwd2">Nickname*</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-lock"></i></div>
-                                <input type="text" name="nickname" class="form-control nickname" placeholder="Nickname"
-                                    required>
+                                <input type="text" name="nickname" class="form-control nickname" placeholder="Nickname" required>
                             </div>
                         </div>
                         <div class="form-group">
@@ -238,8 +189,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="exampleModalLabel1">유저 머니 지급</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form class="form p-t-20">
@@ -264,8 +214,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="exampleModalLabel1">Collect Money</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form class="form p-t-20">

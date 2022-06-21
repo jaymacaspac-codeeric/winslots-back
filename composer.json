@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.4",
+        "intervention/image": "^2.7",
         "ixudra/curl": "^6.22",
         "laravel/framework": "^9.11",
         "laravel/sanctum": "^2.14.1",
@@ -26,7 +27,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Http/Helpers/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

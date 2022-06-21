@@ -13,6 +13,12 @@ use App\Http\Controllers\BetHistoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\CommissionController;
+use App\Http\Controllers\DepositController;
+use App\Http\Controllers\PaymentGatewayController;
+use App\Http\Controllers\SiteController;
+use App\Http\Controllers\AccountSettingsController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,8 +59,12 @@ Route::post('/login', [MainController::class, 'login']);
 Route::get('/logout', [MainController::class, 'logout']);
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+Route::get('/dashboard/profit-loss', [DashboardController::class, 'profitLoss'])->name('profit.loss');
 
+// USER
 Route::get('/user-list', [UserController::class, 'userList'])->name('user.list');
+Route::get('/pending-user', [UserController::class, 'pendingUser'])->name('user.pending.index');
+Route::get('/deactivated-user', [UserController::class, 'deactivatedUser'])->name('user.deactivated.index');
 Route::get('/user-list/{username}', [UserController::class, 'getUserInfo'])->name('user.info');
 Route::get('/get-user-list', [UserController::class, 'getUserList']);
 Route::get('/bet-history/user', [UserController::class, 'userBetHistory'])->name('user.bet');
@@ -72,10 +82,43 @@ Route::get('/transaction', [TransactionController::class, 'index'])->name('trans
 Route::get('/transaction/list', [TransactionController::class, 'transactionList'])->name('transaction.list');
 Route::post('/transaction/log', [TransactionController::class, 'transactionLog'])->name('transaction.log');
 
+//PAYMENT METHOD
+Route::get('/payment/method', [PaymentGatewayController::class, 'index'])->name('payment.index');
+Route::get('/payment/method/list', [PaymentGatewayController::class, 'list'])->name('payment.list');
+Route::get('/payment/method/new', [PaymentGatewayController::class, 'create'])->name('payment.create');
+Route::post('/payment/method/save', [PaymentGatewayController::class, 'save'])->name('payment.save');
+Route::post('/payment/method/status', [PaymentGatewayController::class, 'status'])->name('payment.status');
+Route::post('/payment/method/delete}', [PaymentGatewayController::class, 'delete'])->name('payment.delete');
+Route::get('/payment/method/edit/{id}', [PaymentGatewayController::class, 'edit'])->name('payment.edit');
+Route::post('/payment/method/update/{id}', [PaymentGatewayController::class, 'update'])->name('payment.update');
+
 // AGENT
 Route::get('/agent', [AgentController::class, 'index'])->name('agent.index');
 Route::get('/agent-list', [AgentController::class, 'agentList'])->name('agent.list');
+Route::get('/agent/{username}', [AgentController::class, 'agentInfo'])->name('agent.info');
 Route::get('/create-agent', [AgentController::class, 'createAgent'])->name('agent.create');
 Route::post('/save-agent', [AgentController::class, 'saveAgent'])->name('agent.save');
 Route::post('/check-duplicate-agent', [AgentController::class, 'checkAgentDuplicate'])->name('agent.duplicate');
 Route::get('/agent-tree', [AgentController::class, 'populateAgentTree'])->name('agent.tree');
+
+// DEPOSIT AND WITHDRAW
+Route::post('/deposit/request', [DepositController::class, 'agentRequestDeposit'])->name('deposit.request');
+Route::get('/deposit/pending', [DepositController::class, 'pendingDeposit'])->name('deposit.pending');
+Route::get('/deposit/approved', [DepositController::class, 'approvedDeposit'])->name('deposit.approved');
+Route::get('/deposit/rejected', [DepositController::class, 'rejectedDeposit'])->name('deposit.rejected');
+Route::get('/deposit/log', [DepositController::class, 'logDeposit'])->name('deposit.log');
+
+Route::post('/witdrawals/request', [DepositController::class, 'agentRequestWitdrawals'])->name('withdrawals.request');
+Route::get('/witdrawals/pending', [DepositController::class, 'pendingWitdrawals'])->name('withdrawals.pending');
+Route::get('/witdrawals/approved', [DepositController::class, 'approvedWitdrawals'])->name('withdrawals.approved');
+Route::get('/witdrawals/rejected', [DepositController::class, 'rejectedWitdrawals'])->name('withdrawals.rejected');
+Route::get('/witdrawals/log', [DepositController::class, 'logWitdrawals'])->name('withdrawals.log');
+
+//REPORTS
+Route::get('/commission', [CommissionController::class, 'index'])->name('commission.index');
+Route::get('/commission/bet', [CommissionController::class, 'betResult'])->name('commission.bet');
+
+Route::get('placeholder-image/{size}', [SiteController::class, 'placeholderImage'])->name('placeholder.image');
+
+Route::get('/account/settings', [AccountSettingsController::class, 'index'])->name('account.settings');
+Route::post('/account/settings/address/save', [AccountSettingsController::class, 'saveDepositingMethod'])->name('method.save');

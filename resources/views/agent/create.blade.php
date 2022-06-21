@@ -43,42 +43,7 @@
 </style>
 @endsection
 
-@section('agent-info')
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-holding-balance"> 
-                        {{-- {{ number_format($balance, 0) }} 
-                    </span> Pot</span> --}}
-                </h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-user-holding-balance"> 
-                        {{-- {{ number_format($totalBalance), 0 }} 
-                    </span> Pot</span> --}}
-                </h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-@endsection
+
 
 @section('breadcrumb')
     <div class="row page-titles">
@@ -105,92 +70,86 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="jstree" class="tree">
-                        {{-- <ul>
-                          <li pid="2838" pname="">
-                                <span><i class="_root"></i> <b>사이트</b> </span> 
-                          </li>
-                        </ul> --}}
-                    </div>
-                    <div id="agent_jstree">
-                        {{-- <ul>
-                          <li pid="2838" pname="">
-                                <span><i class="_root"></i> <b>사이트</b> </span> 
-                          </li>
-                        </ul> --}}
-                    </div>
+
+                    <div id="agent_jstree"></div>
+
                 </div>
             </div>
         </div>
         <div class="col-8">
             <div class="card">
-                <div class="card-header">
-                    Agent Information
-                    <div class="card-actions">
-                        <button class="btn btn-outline-info waves-effect waves-light table-reload" type="button"> <i class="fa fa-refresh"></i> </button>
-                        <!-- <a class="btn-minimize"><i class="fa fa-refresh"></i></a> -->
-                    </div>
-                </div>
                 <div class="card-body">
-                    <form class="form-horizontal create-agent-form" role="form">
-                        {!! csrf_field() !!}
-                        <input type="hidden" name="level" class="level" value="">
-                        <input type="hidden" name="agent" class="agent" value="">
-                        <input type="hidden" name="affiliated_agent" class="affiliated_agent" value="">
-
-                        <div class="form-group row">
-                            <label for="parent" class="col-sm-2 col-form-label">Parent ID</label>
-                            <div class="col-sm-10">
-                                <input type="text" name="parent_id" class="form-control parent-id" id="parent" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="agentid" class="col-sm-2 col-form-label">Agent ID</label>
-                            <div class="col-sm-10">
-                                <div class="input-group">
-                                    <input type="text" name="agent_username" class="form-control agent-id" id="agentid" required>
-                                    <a class="input-group-addon btn btn-warning check-agent-id text-white">
-                                        <i class="fa fa-refresh fa-spin username-loading" style="display: none;"></i>&nbsp;
-                                        <span class="check-label"> Check</span>
-                                    </a>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item"> <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home5" role="tab" aria-controls="home5" aria-expanded="true"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Create Sub-Agent</span></a> </li>
+                        {{-- <li class="nav-item"> <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile5" role="tab" aria-controls="profile" aria-expanded="false"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Create Sub-Agent</span></a></li> --}}
+                    </ul>
+                    <div class="tab-content tabcontent-border p-20" id="myTabContent">
+                        <div role="tabpanel" class="tab-pane fade active show" id="home5" aria-labelledby="home-tab" aria-expanded="true">
+                            <form class="form-horizontal create-agent-form" role="form">
+                                {!! csrf_field() !!}
+                                <input type="hidden" name="level" class="level" value="">
+                                <input type="hidden" name="agent" class="agent" value="">
+                                <input type="hidden" name="affiliated_agent" class="affiliated_agent" value="">
+        
+                                <div class="form-group row">
+                                    <label for="parent" class="col-sm-2 col-form-label">Parent ID</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="parent_id" class="form-control parent-id" id="parent" readonly>
+                                    </div>
                                 </div>
-                                <span class="help-block m-b-none text-danger text_agent_chk" id="text_agent_chk">아이디 중복 확인을 필요합니다.</span>
-                            </div>
+                                <div class="form-group row">
+                                    <label for="agentid" class="col-sm-2 col-form-label">Agent ID</label>
+                                    <div class="col-sm-10">
+                                        <div class="input-group">
+                                            <input type="text" name="agent_username" class="form-control agent-id" id="agentid" required>
+                                            <a class="input-group-addon btn btn-warning check-agent-id text-white">
+                                                <i class="fa fa-refresh fa-spin username-loading" style="display: none;"></i>&nbsp;
+                                                <span class="check-label"> Check</span>
+                                            </a>
+                                        </div>
+                                        <span class="help-block m-b-none text-danger text_agent_chk" id="text_agent_chk">아이디 중복 확인을 필요합니다.</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="inputHorizontalWarning" class="col-sm-2 col-form-label">Nickname</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="agent_nick" class="form-control" id="inputHorizontalWarning" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="password" class="col-sm-2 col-form-label">Password</label>
+                                    <div class="col-sm-10">
+                                        <input type="password" name="agent_pw" class="form-control" id="password" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="rate" class="col-sm-2 col-form-label">Rate</label>
+                                    <div class="col-sm-4 input-group">
+                                        <input type="text" name="rate" class="form-control" id="rate" required>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                    <label for="commission" class="col-sm-2 col-form-label">Commision</label>
+                                    <div class="col-sm-4 input-group">
+                                        <input type="text" name="commission" class="form-control" id="commission" required>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="example-month-input" class="col-md-2 col-form-label">Memo</label>
+                                    <div class="col-md-10">
+                                        <textarea class="form-control" name="memo" maxlength="500" id="inputHorizontalDnger" rows="5"></textarea>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button type="button" class="btn waves-effect waves-light btn-info save-agent">Save</button>
+                                </div>
+                            </form>
                         </div>
-                        <div class="form-group row">
-                            <label for="inputHorizontalWarning" class="col-sm-2 col-form-label">Nickname</label>
-                            <div class="col-sm-10">
-                                <input type="text" name="agent_nick" class="form-control" id="inputHorizontalWarning" required>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="password" class="col-sm-2 col-form-label">Password</label>
-                            <div class="col-sm-10">
-                                <input type="password" name="agent_pw" class="form-control" id="password" required>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="rate" class="col-sm-2 col-form-label">Rate</label>
-                            <div class="col-sm-4 input-group">
-                                <input type="text" name="rate" class="form-control" id="rate" required>
-                                <span class="input-group-addon">%</span>
-                            </div>
-                            <label for="commission" class="col-sm-2 col-form-label">Commision</label>
-                            <div class="col-sm-4 input-group">
-                                <input type="text" name="commission" class="form-control" id="commission" required>
-                                <span class="input-group-addon">%</span>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="example-month-input" class="col-md-2 col-form-label">Memo</label>
-                            <div class="col-md-10">
-                                <textarea class="form-control" name="memo" maxlength="500" id="inputHorizontalDnger" rows="5"></textarea>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button type="button" class="btn waves-effect waves-light btn-info save-agent">Save</button>
-                        </div>
-                    </form>
+
+                        {{-- <div class="tab-pane fade" id="profile5" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
+                            <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
+                        </div> --}}
+                    </div>
                 </div>
             </div>
         </div>
@@ -271,30 +230,19 @@
         //     "state" : { "key" : "demo2" },
         //     "plugins" : [ "state", "types" ]
         // });
-
+        // <i class="fa fa-plus-square-o text-primary"></i>
+        var jstree = '';
         $(function () {
             $.ajax({
                 async: true,
                 type: "GET",
                 url: "{{ url('/agent-tree') }}",
                 success: function (json) {
-                    console.log(JSON.parse(json));
-                    $('#agent_jstree').jstree({ 'core' : {
+                    jstree = $('#agent_jstree').jstree({ 'core' : {
                         "themes" : {
                             "variant" : "large"
                         },
-                        'data' : 
-                        // [
-                        //     {
-                        //     "text": "Winslots",
-                        //     "icon" : "fa fa-folder-open text-success",
-                        //     "state": {
-                        //         // "selected": true,
-                        //         "opened": true
-                        //     },
-                        //     }
-                        // ]
-                        JSON.parse(json),
+                        'data' : JSON.parse(json),
                         'multiple': false,
                         "types" : {
                             "default" : {
@@ -311,32 +259,35 @@
             });  
         });
 
-        // function createJSTree(jsondata) {      
-        //     console.log(JSON.parse(jsondata));      
-        //     $('#jstree').jstree({ 'core' : {
-        //         'data' : JSON.parse(jsondata),
-        //         'multiple': false
-        //     } });
-        // }
-
-        // $('#jstree').jstree();
-
         var selected = '';
         var parent_id = '';
 
         $('#agent_jstree').on('select_node.jstree', function (e, data) {
             var i, j, r = [];
             for(i = 0, j = data.selected.length; i < j; i++) {
-            r.push(data.instance.get_node(data.selected[i]).text);
+                r.push(data.instance.get_node(data.selected[i]).text);
             }
             parent_id = data.node.li_attr.pid;
-            // console.log(data.node.li_attr.pid);
-            // console.log(data)
+
             $('.agent').val(data.node.li_attr.pid);
             $('.parent-id').val(data.node.li_attr.pname);
-            $('.affiliated_agent').val(data.node.li_attr.pname != 'greatgame' ? data.node.li_attr.pname : "");
+            $('.level').val(data.node.li_attr.lvl);
+
+            var parent = data.node.li_attr.pname != 'greatgame' ? data.node.li_attr.parent : "";
+            if(parent == "") {
+                if(data.node.li_attr.lvl == 1) {
+                    parent = data.node.li_attr.pid;
+                }
+            }
+
+            $('.affiliated_agent').val(parent);
             // console.log('Selected: ' + r.join(', '));
             selected = r.join(', ');
+        });
+
+        $("#agent_jstree").on("ready.jstree", function (e, data) {
+            var target = jstree.jstree();
+            // $("#"+data.node.id+"_anchor").append('<div class="agent-commands text-right"><i class="fa fa-plus-square-o text-primary"></i></div>');
         });
 
         var is_checked = false;
@@ -344,7 +295,10 @@
 
         $('.check-agent-id').on('click', function(e) {
             var agent_id = $('.agent-id').val();
-            console.log(parent_id);
+
+            if(agent_id.length < 5) {
+                console.log('less than 5');
+            }
 
             if (agent_id != '') {
                 $.ajax({
@@ -380,16 +334,15 @@
         $('.save-agent').on('click', function() {
             console.log(is_duplicate);
             if(is_checked && !is_duplicate) {
-                var form = $('.create-agent-form').serialize();
+                var agent_form = $('.create-agent-form').serialize();
                 $.ajax({
                     url: "{{ url('/save-agent') }}",
                     type: 'POST',
-                    data: form,
+                    data: agent_form,
                     beforeSend: function() {
 
                     },
                     success: function(data) {
-                        console.log(data);
                         if(data == 'success') {
                             // swal("Success!", 'Agent created successfully.', "success");
                             swal({
@@ -397,12 +350,14 @@
                                 text: "Agent created successfully.",
                                 type: "success",
                                 showConfirmButton: true
-                                }, function(){
+                                }, function() {
                                     location.reload();
                                 });
                         }
                     }
                 });
+            } else {
+
             }
         });
     
