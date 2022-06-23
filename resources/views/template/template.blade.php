@@ -13,7 +13,11 @@
     <meta http-equiv="expires" content="0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ URL::asset('assets/images/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ URL::asset('assets/images/logo/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ URL::asset('assets/images/logo/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ URL::asset('assets/images/logo/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ URL::asset('assets/images/logo/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ URL::asset('assets/images/logo/favicon.ico') }}">
     <title>WINSLOTS</title>
     <!-- Bootstrap Core CSS -->
     <link href="{{ URL::asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -21,6 +25,7 @@
     <link href="{{ URL::asset('assets/plugins/morrisjs/morris.css') }}" rel="stylesheet">
 
     <link href="{{ URL::asset('css/iziToast.min.css') }}" rel="stylesheet">
+    <link href="{{ URL::asset('css/iziModal.min.css') }}" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{{ URL::asset('css/style.css') }}" rel="stylesheet">
     <link href="{{ URL::asset('css/custom.css') }}" rel="stylesheet">
@@ -75,7 +80,8 @@
 
                         @if(session('admin_type') == 2)
                             <li class="nav-item m-t-10">
-                                <a href="javascript:void(0)" data-toggle="modal" data-target="#depositModal" class="btn btn-outline-success waves-effect waves-light text-white m-l-20 request-deposit"><i class="fa fa-download"></i> Deposit</a>
+                                <a href="javascript:void(0)" data-iziModal-open="#depositModal1" class="btn btn-outline-success waves-effect waves-light text-white m-l-20 request-deposit"><i class="fa fa-download"></i> Deposit</a>
+                                {{-- <a href="javascript:void(0)" data-toggle="modal" data-target="#depositModal" class="btn btn-outline-success waves-effect waves-light text-white m-l-20 request-deposit"><i class="fa fa-download"></i> Deposit</a> --}}
                                 <a href="javascript:void(0)" class="btn btn-outline-warning waves-effect waves-light text-white m-l-20 request-withdrawal"><i class="fa fa-upload"></i> Withdraw</a>
                             </li>
                         @endif
@@ -199,6 +205,7 @@
                                         <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-holding-balance">
                                             {{-- {{ number_format($balance, 0) }}
                                         </span> Pot</span> --}}
+                                        0 Pot
                                         </h4>
                                     </div>
                                     <div class="spark-chart">
@@ -232,6 +239,7 @@
                                         <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span class="total-user-holding-balance">
                                             {{-- {{ number_format($totalBalance), 0 }}
                                         </span> Pot</span> --}}
+                                        0 Pot
                                         </h4>
                                     </div>
                                     <div class="spark-chart">
@@ -298,12 +306,13 @@
                         </li>
 
                         @if($admin->admin_type == 1)
-                        <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-credit-card-multiple"></i><span class="hide-menu">Payment Gateways </span></a>
+                        <li class="{{ (request()->is('payment*')) ? 'active' : '' }}"> <a href="{{ route('payment.index') }}"><i class="mdi mdi-credit-card-multiple"></i><span class="hide-menu">Payment Method </span></a> </li>
+                        {{-- <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-credit-card-multiple"></i><span class="hide-menu">Payment Gateways </span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li class="{{ (request()->is('payment*')) ? 'active' : '' }}"> <a href="#"><span class="hide-menu">Automatic Gateways </span></a> </li>
-                                <li class="{{ (request()->is('payment*')) ? 'active' : '' }}"> <a href="{{ route('payment.index') }}"><span class="hide-menu">Manual Gateways </span></a> </li>
+                                <li class="{{ (request()->is('payment*')) ? 'active' : '' }}"> <a href="{{ route('payment.index') }}"><span class="hide-menu">Payment Method </span></a> </li>
                             </ul>
-                        </li>
+                        </li> --}}
                         @endif
                             
                             {{-- <li class="{{ (request()->is('user*')) ? 'active' : '' }}"> <a href="{{ url('/user-list') }}"><i class="mdi mdi-account-multiple"></i><span class="hide-menu">Player List </span></a> </li> --}}
@@ -318,9 +327,19 @@
                             </ul>
                         </li>
 
-                        <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-download"></i><span class="hide-menu">Deposits</span></a>
+                        <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                            <i class="mdi mdi-download"></i>
+                            <span class="hide-menu">
+                            Deposits
+                            @if($pending_deposits_count > 0)
+                                <span class="label label-danger">!</span>
+                            @endif
+                            </span></a>
                             <ul aria-expanded="false" class="collapse">
-                                <li class="{{ (request()->is('deposit*')) ? 'active' : '' }}"> <a href="{{ route('deposit.pending') }}">Pending Deposits</a> </li>
+                                <li class="{{ (request()->is('deposit*')) ? 'active' : '' }}"> <a href="{{ route('deposit.pending') }}">Pending Deposits 
+                                    @if($pending_deposits_count > 0)
+                                        <span class="label label-danger">{{ $pending_deposits_count }}</span>
+                                    @endif</a> </li>
                                 <li class="{{ (request()->is('deposit*')) ? 'active' : '' }}"> <a href="#">Approved Deposits</a> </li>
                                 <li class="{{ (request()->is('deposit*')) ? 'active' : '' }}"> <a href="#">Rejected Deposits</a> </li>
                                 <li class="{{ (request()->is('deposit*')) ? 'active' : '' }}"> <a href="#">Deposits Log</a> </li>
@@ -336,11 +355,17 @@
                             </ul>
                         </li>
 
-                        <li class="nav-small-cap">Reports</li>
+                        {{-- <li class="nav-small-cap">Reports</li>
                             <li class=""> <a href="#"><i class="mdi mdi-cash"></i><span class="hide-menu">Transaction History </span></a> </li>
                             <li class=""> <a href="#"><i class="mdi mdi-credit-card-multiple"></i><span class="hide-menu">Deposits </span></a> </li>
                             <li class=""> <a href="#"><i class="mdi mdi-credit-card-multiple"></i><span class="hide-menu">Withdrawals </span></a> </li>
-                            <li class="{{ (request()->is('commission*')) ? 'active' : '' }}"> <a href="{{ route('commission.index') }}"><i class="mdi mdi-cash"></i><span class="hide-menu">Commissions </span></a> </li>
+                            <li class="{{ (request()->is('commission*')) ? 'active' : '' }}"> <a href="{{ route('commission.index') }}"><i class="mdi mdi-cash"></i><span class="hide-menu">Commissions </span></a> </li> --}}
+                        
+                        <li class="nav-small-cap">Settings</li>
+                        @if($admin->admin_type == 1)
+                            <li class="{{ (request()->is('settings*')) ? 'active' : '' }}"> <a href="{{ route('settings.general') }}"><i class="mdi mdi-settings"></i><span class="hide-menu">General Settings </span></a> </li>
+                        @endif
+                            <li class="{{ (request()->is('account*')) ? 'active' : '' }}"> <a href="{{ route('account.settings') }}"><i class="mdi mdi-account-settings-variant"></i><span class="hide-menu">Account Settings </span></a> </li>
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
@@ -371,194 +396,147 @@
                 @yield('content')
 
                 <!-- Row -->
+                <div id="depositModal1" class="iziModal" data-izimodal-title="Deposit Request - Rate: <span class='badge badge-danger'>{{ $rate }}%</span>">
+                    <div class="">
 
-                <div class="modal fade in" id="depositModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title" id="exampleModalLabel1">Deposit</h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="">
+                        <form class="form-horizontal request-deposit-form" role="form">
+                            {!! csrf_field() !!}
+                            <input type="hidden" class="exchangeRate" value="{{ $rate }}">
+                            
+                            <span>STEP 1: Select a Deposit Method</span>
 
-                                    <form class="form-horizontal request-deposit-form" role="form">
-                                        {!! csrf_field() !!}
-                                        <input type="hidden" class="exchangeRate" value="{{ $rate }}">
-                                        
-                                        <span>STEP 1: Select a Deposit Method</span>
-
-                                        <div class="radio-tile-group text-center col-sm-12 m-b-20 m-t-20">
-                                            @foreach ($paymentMethod as $method)
-                                                <div class="input-container col-sm-3">
-                                                    <input id="btc" class="radio-button" type="radio" name="method" data-id="{{ $method->id }}" data-params="{{ $method->parameter }}" value="{{ $method->name }}" />
-                                                    <div class="radio-tile">
-                                                    <div class="icon walk-icon">
-
-                                                    </div>
-                                                    <img src="{{ URL::asset('assets/images/gateway') }}/{{ $method->image }}" class="method-logo">
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                            {{-- <div class="input-container col-sm-3">
-                                                <input id="btc" class="radio-button" type="radio" name="method" value="BTC" />
-                                                <div class="radio-tile">
-                                                <div class="icon walk-icon">
-
-                                                </div>
-                                                <img src="{{ URL::asset('assets/images/currency/svg/btc.svg') }}" class="method-logo">
-                                                </div>
-                                            </div>
-                                        
-                                            <div class="input-container col-sm-3">
-                                                <input id="eth" class="radio-button" type="radio" name="method" value="ETH" />
-                                                <div class="radio-tile">
-                                                <div class="icon bike-icon">
-                                                    
-                                                </div>
-                                                <img src="{{ URL::asset('assets/images/currency/svg/eth.svg') }}" class="method-logo">
-                                                </div>
-                                            </div>
-
-                                            <div class="input-container col-sm-3">
-                                                <input id="usdt" class="radio-button" type="radio" name="method" value="USDT" />
-                                                <div class="radio-tile">
-                                                <div class="icon bike-icon">
-                                                    
-                                                </div>
-                                                <img src="{{ URL::asset('assets/images/currency/svg/usdt.svg') }}" class="method-logo">
-                                                </div>
-                                            </div>
-
-                                            <div class="input-container col-sm-3">
-                                                <input id="bch" class="radio-button" type="radio" name="method" value="BCH" />
-                                                <div class="radio-tile">
-                                                <div class="icon bike-icon">
-                                                    
-                                                </div>
-                                                <img src="{{ URL::asset('assets/images/currency/svg/bch.svg') }}" class="method-logo">
-                                                </div>
-                                            </div> --}}
+                            <div class="radio-tile-group text-center row m-b-20 m-t-20">
+                                @foreach ($paymentMethod as $method)
+                                    <div class="input-container col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                        <input id="{{ $method->code }}" class="radio-button" type="radio" name="method" data-id="{{ $method->id }}" data-name="{{ $method->name }}" data-img="{{ $method->image }}" data-params="{{ $method->parameter }}" value="{{ $method->name }}" />
+                                        <div class="radio-tile">
+                                            <img src="{{ URL::asset('assets/images/gateway') }}/{{ $method->image }}" class="method-logo">
                                         </div>
-                                        
-                                        <span>STEP 2: Select a Deposit Amount</span>
-
-                                        <div class="radio-tile-group text-center m-t-20">
-                                            <div class="input-container col-sm-3">
-                                                <input id="100000" class="radio-button" type="radio" name="amount" value="100000" />
-                                                <div class="radio-tile">
-                                                    <div class="icon walk-icon">
-
-                                                    </div>
-                                                    <label for="100000" class="radio-tile-label">100,000</label>
-                                                </div>
-                                            </div>
-                                        
-                                            <div class="input-container col-sm-3">
-                                                <input id="500000" class="radio-button" type="radio" name="amount" value="500000" />
-                                                <div class="radio-tile">
-                                                    <div class="icon bike-icon">
-                                                        
-                                                    </div>
-                                                    <label for="500000" class="radio-tile-label">500,000</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="input-container col-sm-3">
-                                                <input id="1000000" class="radio-button" type="radio" name="amount" value="1000000" />
-                                                <div class="radio-tile">
-                                                    <div class="icon bike-icon">
-                                                        
-                                                    </div>
-                                                    <label for="1000000" class="radio-tile-label">1,000,000</label>
-                                                </div>
-                                            </div>
-                                            <div class="input-container col-sm-3">
-                                                <input id="10000000" class="radio-button" type="radio" name="amount" value="10000000" />
-                                                <div class="radio-tile">
-                                                    <div class="icon bike-icon">
-                                                        
-                                                    </div>
-                                                    <label for="10000000" class="radio-tile-label">10,000,000</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-lg-12">
-                                                <div class="form-horizontal">
-                                                    <div class="form-group row m-t-20">
-                                                        <label for="chargeamount" class="col-sm-4 control-label text-left">Request POT</label>
-                                                        <div class="col-sm-8">
-                                                            <div class="input-group">
-                                                                <input type="text" name="deposit_charge_amount" class="form-control deposit_charge_amount" id="chargeamount" required>
-                                                                {{-- <input type="number" name="deposit_charge_amount" id="chargeamount" class="form-control deposit_charge_amount" required="" data-validation-required-message="This field is required" aria-invalid="false"> --}}
-        
-                                                                <div class="input-group-addon">POT</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label for="cashamount" class="col-sm-4 control-label text-left">Amount</label>
-                                                        <div class="col-sm-8">
-                                                            <div class="input-group">
-                                                                <input type="text" name="deposit_amount" id="cashamount" class="form-control deposit_amount" required>
-        
-                                                                {{-- <div class="input-group-addon"><i class="fa fa-usd"></i></div> --}}
-                                                                <div class="input-group-addon">KRW</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div class="form-group row">
-                                                        <label for="exchangeRateForDisplay" class="col-sm-4 col-form-label text-left">Rate 
-                                                            <span class="label label-danger">{{ $rate }}%</span>
-                                                        </label>
-                                                        {{-- <div class="col-sm-8">
-                                                            <span class="label label-light-info">{{ $rate }}%</span>
-                                                        </div> --}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {{-- <div class="text-white text-center m-t-10">
-                                            <a class="btn btn-success submit-deposit text-white">
-                                                <i class="fa fa-download"></i>
-                                                Deposit
-                                            </a>
-                                        </div> --}}
-                                    </form>
-                                  </div>
+                                    </div>
+                                @endforeach
                             </div>
-                            <div class="modal-footer text-center" style="display: block !important">
-                                <div class="text-white">
-                                    <a class="btn btn-success submit-request-deposit text-white">
-                                        <i class="fa fa-download"></i>
-                                        Deposit
-                                    </a>
+                            
+                            <span>STEP 2: Select a Deposit Amount</span>
+
+                            <div class="radio-tile-group text-center row m-t-20">
+                                <div class="input-container col-sm-3">
+                                    <input id="100000" class="radio-button" type="radio" name="amount" value="100000" />
+                                    <div class="radio-tile">
+                                        <div class="icon walk-icon">
+
+                                        </div>
+                                        <label for="100000" class="radio-tile-label">100,000</label>
+                                    </div>
                                 </div>
-                                {{-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> --}}
+                            
+                                <div class="input-container col-sm-3">
+                                    <input id="500000" class="radio-button" type="radio" name="amount" value="500000" />
+                                    <div class="radio-tile">
+                                        <div class="icon bike-icon">
+                                            
+                                        </div>
+                                        <label for="500000" class="radio-tile-label">500,000</label>
+                                    </div>
+                                </div>
+
+                                <div class="input-container col-sm-3">
+                                    <input id="1000000" class="radio-button" type="radio" name="amount" value="1000000" />
+                                    <div class="radio-tile">
+                                        <div class="icon bike-icon">
+                                            
+                                        </div>
+                                        <label for="1000000" class="radio-tile-label">1,000,000</label>
+                                    </div>
+                                </div>
+                                <div class="input-container col-sm-3">
+                                    <input id="10000000" class="radio-button" type="radio" name="amount" value="10000000" />
+                                    <div class="radio-tile">
+                                        <div class="icon bike-icon">
+                                            
+                                        </div>
+                                        <label for="10000000" class="radio-tile-label">10,000,000</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
+                                    <div class="form-horizontal">
+                                        <div class="form-group row m-t-20">
+                                            <label for="chargeamount" class="col-sm-4 control-label text-left">Request POT</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <input type="text" name="deposit_charge_amount" class="form-control deposit_charge_amount" id="chargeamount" required>
+                                                    {{-- <input type="number" name="deposit_charge_amount" id="chargeamount" class="form-control deposit_charge_amount" required="" data-validation-required-message="This field is required" aria-invalid="false"> --}}
+
+                                                    <div class="input-group-addon">POT</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="cashamount" class="col-sm-4 control-label text-left">Amount</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <input type="text" name="deposit_amount" id="cashamount" class="form-control deposit_amount" required>
+
+                                                    {{-- <div class="input-group-addon"><i class="fa fa-usd"></i></div> --}}
+                                                    <div class="input-group-addon">KRW</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {{-- <div class="form-group row">
+                                            <label for="exchangeRateForDisplay" class="col-sm-4 col-form-label text-left">Rate 
+                                                <span class="label label-danger">{{ $rate }}%</span>
+                                            </label>
+                                        </div> --}}
+                                    </div>
+                                </div>
                             </div>
+                        </form>
+                    </div>
+                    <div class="text-center" style="display: block !important">
+                        <div class="text-white">
+                            <a class="btn btn-info submit-request-deposit text-white">
+                                <i class="fa fa-download"></i>
+                                Deposit
+                            </a>
                         </div>
+                        {{-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> --}}
                     </div>
                 </div>
 
-                <div class="modal fade in" id="depositAddressModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" data-backdrop="static" data-keyboard="false">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title" id="exampleModalLabel1">Deposit</h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="text-center">
-                                    <span class="crypto-address"></span>&nbsp;<a href="#"><i class="mdi mdi-content-copy"></i></a>
-                                    {{-- <input type="text" class="crypto-address form-control" readonly> --}}
-                                    <div class="text-center qrcode" id="qrcode" style="width:200px; height:200px; margin:15px auto;"></div>
+                <div id="depositAddressModal1" class="iziModal1" data-izimodal-title="Deposit Request">
+                    <div class="modal-body">
+                        <div><span class="payment-amount text-primary"></span> </div>
+
+                            <div class="payment-container row">
+                                <div class="col-lg-6 col-xs-6">
+                                    <div class="coint-img">
+                                        <img src="" class="deposit-method-img">
+                                    </div>
                                 </div>
+                                <div class="col-lg-6 col-xs-6">
+                                    <div class="qrcode-container text-center">
+                                        <div class="qrcode" id="qrcode" style="width:150px; height:150px; margin:15px auto;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
+									<div class="crypto-address-container text-center">
+						                <span class="crypto-address" id="crypto-address"></span><br/>
+                                        <button type="button" class="btn waves-effect waves-light btn-warning copy-clipboard">Copy Address</button>
+						            </div>	
+								</div>
+
+                                <div class="col-lg-12 col-lg-12">
+									<div class="payment-amount-container text-center">
+                                            
+						            </div>	
+								</div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+                            <div class="address-container row text-center">
+
                             </div>
-                        </div>
                     </div>
                 </div>
 
@@ -615,6 +593,7 @@
     <!--Custom JavaScript -->
     <script src="{{ URL::asset('js/custom.min.js') }}"></script>
     <script src="{{ URL::asset('js/iziToast.min.js') }}"></script>
+    <script src="{{ URL::asset('js/iziModal.min.js') }}"></script>
     <!-- <script src="js/login.js"></script> -->
     <!-- ============================================================== -->
     <!-- This page plugins -->
@@ -666,46 +645,41 @@
 
         var deposit_amount = $('input[name="amount"]:checked').val();
         var deposit_method = $('input[name="method"]:checked').val();
+        var payment_amount = 0;
 
         var rate = $('.exchangeRate').val();
 
-        var qrcode = new QRCode("qrcode", {
-                        width: 200,
-                        height: 200,
-                        colorDark : "#000000",
-                        colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
-
-        $('input:radio[name="amount"]').change(function() {
+        $(document).on('change', 'input:radio[name="amount"]', function() {
             deposit_amount = parseFloat($('input[name="amount"]:checked').val());
             var rate_amount = parseFloat(deposit_amount * (rate / 100)); 
-            $('.deposit_amount').val(rate_amount);
+            $('.deposit_amount').val($.number(rate_amount));
 
             var test = parseFloat(deposit_amount / (rate / 100));
-            $('.deposit_charge_amount').val(deposit_amount);
+            payment_amount = rate_amount;
+            $('.deposit_charge_amount').val($.number(deposit_amount));
         });
 
-        $('.deposit_charge_amount').number(true).on('input', function() {
+        $(document).number(true).on('input', '.deposit_charge_amount', function() {
             $('input:radio[name="amount"]').prop("checked", false);
             var charge_amount = $(this).val();
             //convert KRW to USD
             var toKRW = charge_amount * (rate / 100);
+            payment_amount = toKRW;
             console.log(toKRW);
             // var toUSD = toKRW / 1257.15;
             // console.log($.number(toUSD, 2));
             $('.deposit_amount').val($.number(toKRW));
         });
 
-        $('.deposit_amount').number(true).on("input", function() {
+        $(document).number(true).on("input", '.deposit_amount', function() {
             $('input:radio[name="amount"]').prop("checked", false);
-            var test = $(this).val() / (rate / 100);
+            var res = $(this).val() / (rate / 100);
             // console.log(test);
-            $('.deposit_charge_amount').val(test);
+            $('.deposit_charge_amount').val($.number(res));
             // console.log($.number(test, 2) * 1257.15);
         });
 
-        $('input:radio[name="method"]').change(function() {
+        $(document).on('change', 'input:radio[name="method"]', function() {
             deposit_method = $('input[name="method"]:checked').val();
             console.log(deposit_method);
         });
@@ -731,18 +705,8 @@
             }
 
             if(deposit_method != '' && deposit_method != undefined && deposit_amount != '' && deposit_amount != undefined && deposit_request_amount_val != '' && deposit_amount_val != '') {
-                $.ajax({
-                    url: "{{ route('deposit.request') }}",
-                    type: 'POST',
-                    data: $('.request-deposit-form').serialize(),
-                    success: function(data) {
-                        $('#depositModal').modal('toggle');
-                        $('#depositAddressModal').modal('show');
-
-                        $('.crypto-address').html($('input[name="method"]:checked').data('params'));
-                        qrcode.makeCode($('input[name="method"]:checked').data('params'));
-                    }
-                });
+                $('#depositModal1').iziModal('close');
+                $('#depositAddressModal1').iziModal('open');
             }
         });
 
@@ -758,6 +722,85 @@
         $('#depositAddressModal').on('hidden.bs.modal', function() {
             $('.crypto-address').html("");
             qrcode.clear();
+            payment_amount = 0;
+        });
+
+        $(document).on('click', '.copy-clipboard', function(){
+            var r = document.createRange();
+            r.selectNode(document.getElementById("crypto-address"));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(r);
+            try {
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+            } catch (err) {
+                console.log('Unable to copy');
+            }
+        });
+
+        $(".iziModal").iziModal({
+            width: 700,
+            radius: 5,
+            padding: 20,
+            headerColor: '#238bf7',
+            zindex: 999,
+            onClosed: function(){
+                $('input:radio[name="method"]').prop("checked", false);
+                $('input:radio[name="amount"]').prop("checked", false);
+                $('.deposit_amount').val('');
+                $('.deposit_charge_amount').val('');
+                deposit_amount = '';
+                deposit_method = '';
+            },
+        });
+
+        $(".iziModal1").iziModal({
+            width: 700,
+            radius: 5,
+            padding: 20,
+            headerColor: '#238bf7',
+            zindex: 999,
+            overlayClose: false,
+            onOpening: function(modal) {
+                modal.startLoading();
+                $('.qrcode').html("");
+                $.ajax({
+                    url: "{{ route('deposit.request') }}",
+                    type: 'POST',
+                    data: $('.request-deposit-form').serialize(),
+                    success: function(data) {
+                        console.log(data);
+                        // $('#depositModal').modal('toggle');
+                        var params = $('input[name="method"]:checked').data('params');
+                        var img = $('input[name="method"]:checked').data('img');
+
+                        $(".deposit-method-img").attr("src", "{{ URL::asset('assets/images/gateway') }}" + '/'+img);
+                        $('.crypto-address').html(params);
+                        // 
+                        // $('#depositAddressModal').modal('show');
+                        $('.payment-amount').html(payment_amount + ' KRW');
+                        var qrcode = new QRCode("qrcode", {
+                                    width: 150,
+                                    height: 150,
+                                    colorDark : "#000000",
+                                    colorLight : "#ffffff",
+                                    correctLevel : QRCode.CorrectLevel.H
+                                });
+                        qrcode.makeCode(params); 
+
+                        modal.stopLoading();
+                    }
+                });
+            },
+            onOpened: function() {
+            },
+            onClosed: function() {
+                $('.crypto-address').html("");
+                payment_amount = 0;
+            },
+            afterRender: function() {
+   
+            }
         });
 
     </script>

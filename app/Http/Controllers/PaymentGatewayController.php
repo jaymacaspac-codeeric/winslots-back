@@ -18,7 +18,10 @@ class PaymentGatewayController extends Controller
 
     public function create(Request $request) {
         if($request->session()->has('username')) {
-            return view('gateway.new');
+            $settings = DB::table('set_site')
+                        ->first();
+
+            return view('gateway.new', compact('settings'));
         } else {
             return redirect('/');
         }
@@ -27,6 +30,7 @@ class PaymentGatewayController extends Controller
     public function save(Request $request) {
         $request->validate([
             'gateway_name'          => 'required|max:60',
+            'gateway_code'          => 'required|max:10',
             'image'                 => 'required|image|mimes:jpeg,jpg,png',
             'method_rate'           => 'required|numeric|gt:0',
             'method_currency'       => 'required|max:10',
@@ -68,6 +72,7 @@ class PaymentGatewayController extends Controller
 
         $method = DB::table('gateway_currencies')->insert([
             'name'          => $request->gateway_name,
+            'code'          => $request->code,
             'currency'      => $request->method_currency,
             'rate'          => $request->method_rate,
             'min_amount'    => $request->min_amount,
@@ -96,7 +101,10 @@ class PaymentGatewayController extends Controller
                 ->where('id', $id)
                 ->first();
 
-        return view('gateway.edit', compact('gateway'));
+        $settings = DB::table('set_site')
+                    ->first();
+
+        return view('gateway.edit', compact('gateway', 'settings'));
     }
 
     public function update(Request $request, $id) {
@@ -159,7 +167,6 @@ class PaymentGatewayController extends Controller
             'updated_at'    => date("Y-m-d\TH:i:s\Z", strtotime(Carbon::now())),
         ]);
 
-        
         $notify[] = ['success', $request->gateway_name . ' Manual gateway has been added.'];
         return redirect()->route('payment.index')->withNotify($notify);
     }

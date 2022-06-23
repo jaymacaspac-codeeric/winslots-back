@@ -73,22 +73,74 @@
                             </div>
                         </div>
                         
-                        <table id="bet_history_table" class="bet_history_table display table table-hover table-bordered" cellspacing="0" width="100%" style="font-size: 14px;">
+                        <table id="pending_deposit" class="pending_deposit display table table-hover table-bordered" cellspacing="0" width="100%" style="font-size: 14px;">
                             <thead>
                                 <tr>
-                                    <th>Number</th>
+                                    <th>Transaction No.</th>
                                     <th>User</th>
-                                    <th>Game</th>
-                                    <th>Betting Time</th>
-                                    <th>Processing Time</th>
-                                    <th>Bet Summary</th>
-                                    <th>Management</th>
+                                    <th>Request Amount</th>
+                                    <th>Payable</th>
+                                    <th>User Type</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="viewPendingDepositModal" class="viewPendingDepositModal" >
+        <div class="modal-body">
+            <ul class="list-group">
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Status                                                            
+                    <span class="badge badge-pill bg--success">Active</span>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Rate                            
+                    <span class="font-weight-bold">100.00 USD</span>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Commission                         
+                    <span class="font-weight-bold"><a href="https://localhost/Lottery/admin/user/tickets/1"> 0 Tickets</a></span>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Total Buy Ticket in Amount                            
+                    <span class="font-weight-bold"><a href="https://localhost/Lottery/admin/user/tickets/1"> 0 USD</a></span>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Total Win Ticket                            
+                    <span class="font-weight-bold"><a href="https://localhost/Lottery/admin/user/wins/1"> 0 Tickets</a></span>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Total Win Bonus                            
+                    <span class="font-weight-bold"><a href="https://localhost/Lottery/admin/user/wins/1"> 0 USD</a></span>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Referred By                            
+                    <span class="font-weight-bold"> none </span>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Total Referral                            
+                    <span class="font-weight-bold"><a href="https://localhost/Lottery/admin/user/referrals/1"> 0</a> </span>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Total Referral Commissions                            
+                    <span class="font-weight-bold"><a href="https://localhost/Lottery/admin/user/commissions/deposit/1"> 0 USD </a></span>
+                </li>
+            </ul>
         </div>
     </div>
 @endsection
@@ -108,6 +160,104 @@
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <script>
+        var table = $('#pending_deposit').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            "bAutoWidth" : true,
+            "ajax": {
+                url: "{{ route('deposit.pending.list') }}",
+                type: 'GET',
+                "dataSrc": function (json) {
+                    return json;
+                }
+            },
+            "columnDefs" : [
+            {
+                "targets": 0,
+                'render': function(data, type, full, meta) {
+                    return full['transaction_id'];
+                }
+            },
+            {
+                "targets": 1,
+                'render': function(data, type, full, meta) {
+                    var user = '';
+                    if(full['user_type'] == 2) {
+                        user = full['agent_uname']
+                    } else {
+                        user = full['player_name']
+                    }
+                    return user;
+                }
+            },
+            {
+                "targets": 2,
+                'render': function(data, type, full, meta) {
+                    return full['request_amount'];
+                }
+            },
+            {
+                "targets": 3,
+                'render': function(data, type, full, meta) {
+                    return full['krw_amount'] + ' KRW';
+                }
+            },
+            {
+                "targets": 4,
+                'render': function(data, type, full, meta) {
+                    var user_type = '';
+                    if(full['user_type'] == 2) {
+                        user_type = '<span class="label label-info">Agent</span>';
+                    } else {
+                        user_type = '<span class="label label-success">Player</span>';
+                    }
+                    return user_type;
+                }
+            },
+            {
+                "targets": 5,
+                'render': function(data, type, full, meta) {
+                    return moment(full['created_at']).format("YYYY-MM-DD hh:mm");
+                }
+            },
+            {
+                "targets": 6,
+                'render': function(data, type, full, meta) {
+                    var datauser = '';
+                    if(full['user_type'] == 2) {
+                        datauser = full['agent_uname']
+                    } else {
+                        datauser = full['player_name']
+                    }
+                    return '<a href="javascript:void(0)" class="btn btn-info waves-effect waves-light btn-sm viewDeposit" data-user="'+ datauser +'" data-id="'+ full['id'] +'"> <i class="fa fa-desktop"></i> </a>';
+                }
+            }
+        ],
+            "initComplete": function(settings, json) {
+                $(document).on('click', '.viewDeposit', function() {
+                    console.log('click');
+                    $('#viewPendingDepositModal').iziModal('open', {
 
+                    });
+
+                    $('#viewPendingDepositModal').iziModal('setTitle', 'asdasd');
+
+                });
+            }
+        });
+
+        $(".viewPendingDepositModal").iziModal({
+            // title: 'asdasd',
+            width: 700,
+            radius: 5,
+            padding: 20,
+            headerColor: '#238bf7',
+            zindex: 999,
+            onOpening: function(){
+
+            },
+        });
     </script>
 @endsection

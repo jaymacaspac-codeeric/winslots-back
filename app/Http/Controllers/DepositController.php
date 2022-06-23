@@ -9,24 +9,31 @@ use Illuminate\Support\Carbon;
 
 class DepositController extends Controller
 {
-    public function pendingDeposit() {
-        return view('deposits.pending');
+    public function pendingDeposit(Request $request) {
+        if($request->session()->has('username')) {
+           return view('deposits.pending');
+        } else {
+            return redirect('/');
+        }
     }
 
     public function pendingDepositList() {
         if(session('agent_id') == '2838' && session('admin_type') == 1) {
-            $pending_deposits = DB::table('info_deposit')
-            ->where('status', '0')
-            ->get();
+            $pending_deposits = DB::table('info_deposit as d')
+                            ->leftJoin('info_agent as a', 'd.user_id', 'a.agent_id')
+                            ->leftJoin('info_users as u', 'd.user_id', 'u.user_id')
+                            ->select('d.*', 'a.agent_uname', 'a.agent_name', 'a.agent_nick', 'u.username as player_name', 'u.nickname as player_nick', 'u.firstname as player_firstname', 'u.lastname as player_lastname')
+                            ->where('d.status', '2')
+                            ->get();
         } else {
             $pending_deposits = DB::table('info_deposit as d')
-            ->join('info_users as u', 'd.user_id', 'u.user_id')
-            ->where('u.agent_id', session('agent_id'))
-            ->where('d.status', '0')
-            ->get();
+                            ->leftJoin('info_agent as a', 'd.user_id', 'a.agent_id')
+                            ->leftJoin('info_users as u', 'd.user_id', 'u.user_id')
+                            ->where('u.agent_id', session('agent_id'))
+                            ->where('a.parent', session('agent_id'))
+                            ->where('d.status', '2')
+                            ->get();
         }
-
-        $totalRecords = count($pending_deposits);
 
         return $pending_deposits;
     }
@@ -75,12 +82,13 @@ class DepositController extends Controller
         ];
 
         $deposit = DB::table('info_deposit')->insert([
-            'transaction_id'    => str_pad(session('id'), 7, "0", STR_PAD_LEFT),
+            // 'transaction_id'    => getTrx() . time() . session('id'),
+            'transaction_id'    => strtoupper(uniqid(date("Ym"))).session('id'),
             'user_id'           => session('agent_id'),
             'username'          => session('username'),
             'transaction_type'  => 'deposit',
-            'amount'            => $request->deposit_charge_amount,
-            'krw_amount'        => $request->deposit_amount,
+            'request_amount'            => (float) str_replace(',', '', $request->deposit_charge_amount),
+            'krw_amount'        => (float) str_replace(',', '', $request->deposit_amount),
             'payment_method'    => $request->method,
             'user_type'         => 2,
             'status'            => 2,  // 1:success, 2:pending, 3:cancel
@@ -88,7 +96,45 @@ class DepositController extends Controller
         ]);
 
         // return $request_deposit;
-        return $test;
+        return $request;
+    }
+
+    public function approve(Request $request) {
+        $request->validate([
+            'id' => 'required|integer'
+        ]);
+
+        $deposit = DB::table('info_deposit')
+                ->where('id', $request->id)
+                ->where('status', 2)
+                ->update(['statuse' => 1]);
+        if($deposit) {
+            $details = DB::table('info_deposit')
+                    ->where('id', $request->id)
+                    ->first();
+
+            $user = DB::table('info_user')
+                ->where('user_id', $details->user_id)
+                ->where('user_type', $details->user_type)
+                ->update(['balance' => $details->request_amount]);
+            
+            $log = DB::table('log_deposit')->insert([
+                'approved_by'       => session('agent_id'),
+                'transaction_id'    => $details->transaction_id,
+                'target_user'       => $details->user_id,
+                'user_type'         => $details->user_type,
+                'request_amount'            => $details->request_amount,
+                'details'           => 'Deposit Via ' . $details->payment_method,
+                'created_at'        =>  date("Y-m-d\TH:i:s\Z", strtotime(Carbon::now()))
+            ]);
+        }
+
+        $notify[] = ['success', 'Deposit request has been approved.'];
+        return redirect()->route('deposits.pending')->withNotify($notify);
+    }
+
+    public function reject(Request $request) {
+        
     }
 
 }

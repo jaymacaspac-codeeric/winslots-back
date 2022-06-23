@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 class AgentController extends Controller
 {
@@ -107,7 +108,7 @@ class AgentController extends Controller
             'balance'           => '0',
             'memo'              => $memo,
             'level'             => $level + 1,
-            'creation_date'     => date("Y-m-d h:i:s"),
+            'creation_date'     => date("Y-m-d\TH:i:s\Z", strtotime(Carbon::now())),
             'status'            => '1',
             'sub_agent_count'   => 0
         ]);

@@ -126,7 +126,7 @@
                 "targets": 2,
                 'render': function(data, type, full, meta) {
 
-                    return '1$ = ' + full['rate'] + ' ' + full['currency'];
+                    return '1 USD = ' + full['rate'] + ' ' + full['currency'];
                 }
             }, {
                 "targets": 3,

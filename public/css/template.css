@@ -6,6 +6,7 @@
 .radio-tile-group .input-container {
     position: relative;
     height: 5rem;
+    width: 33%;
 }
 .radio-tile-group .input-container .radio-button {
     opacity: 0;
@@ -43,7 +44,7 @@
 }
 .radio-tile-group .input-container .radio-button:checked + .radio-tile {
     background-color: #079ad9;
-    border: 2px solid #079ad9;
+    border: 1px solid #4affab;
     color: white;
     transform: scale(1.1, 1.1);
 }
@@ -70,4 +71,30 @@
 .page-title {
     font-size: 1.125rem;
     display: inline-block;
+}
+
+.qrcode-container {
+    /* width: 100%;  */
+    text-align: center; 
+    padding: 0;
+}
+
+.coint-img {
+    /* width: 100%;  */
+    text-align: center; 
+    margin-bottom: 5px;
+}
+
+.deposit-method-img {
+    width: 150px;
+    margin-bottom: 10px;
+}
+
+.crypto-address {
+    font-size: 20px;
+}
+@media(max-width: 480px){
+    .crypto-address {
+    	font-size: 14px;
+    }
 }

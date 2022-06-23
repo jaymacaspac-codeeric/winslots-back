@@ -45,7 +45,7 @@ class DashboardController extends Controller
                                     ->groupBy('username')
                                     ->count();
                 $pending_deposits = DB::table('info_deposit')
-                                    ->where('status', 0)
+                                    ->where('status', 2)
                                     ->count();
                 $pending_withdrawals = DB::table('info_withdrawals')
                                     ->where('status', '0')
@@ -53,7 +53,7 @@ class DashboardController extends Controller
 
                 $total_deposits['amount'] = DB::table('info_deposit')
                                 ->where('status', 1)
-                                ->sum('amount');
+                                ->sum('request_amount');
                 $total_deposits['krw_amount'] = DB::table('info_deposit')
                                 ->where('status', 1)
                                 ->sum('krw_amount');
@@ -100,7 +100,7 @@ class DashboardController extends Controller
                                 ->join('info_users as u', 'd.user_id', 'u.id')
                                 ->where('d.status', 1)
                                 ->where('u.agent_id', session('agent_id'))
-                                ->sum('amount');
+                                ->sum('request_amount');
                 $total_deposits['krw_amount'] = DB::table('info_deposit as d')
                                 ->join('info_users as u', 'd.user_id', 'u.id')
                                 ->where('d.status', 1)

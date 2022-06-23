@@ -149,22 +149,65 @@
 @endsection
 
 @section('breadcrumb')
-<div class="row page-titles">
-    <div class="col-md-5 align-self-center">
-        <h3 class="text-themecolor">Dashboard</h3>
-    </div>
-    <div class="col-md-7 align-self-center">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-            <li class="breadcrumb-item active">Dashboard</li>
-        </ol>
-    </div>
-</div>
+    {{-- <div class="row page-titles">
+        <div class="col-md-5 align-self-center">
+            <h3 class="text-themecolor">Dashboard</h3>
+        </div>
+        <div class="col-md-7 align-self-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+        </div>
+    </div> --}}
 @endsection
 
 @section('content')
 <div class="row m-b-20">
+    <div class="col-lg-6 col-sm-6">
+        <h6 class="page-title">Dashboard</h6>
+    </div>
+</div>
+<div class="row m-b-20">
     <!-- Column -->
+    <div class="col-lg-12">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <div class="tradingview-widget-copyright"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                {
+                    "symbols": [
+                        {
+                            "proName": "COINBASE:BTCUSD",
+                            "title": "BTC/USD"
+                        },
+                        {
+                            "proName": "COINBASE:ETHUSD",
+                            "title": "ETH/USD"
+                        },
+                        {
+                            "description": "USDT/USD",
+                            "proName": "COINBASE:USDTUSD"
+                        },
+                        {
+                            "description": "BCH/USD",
+                            "proName": "COINBASE:BCHUSD"
+                        },
+                        {
+                            "description": "USD/KRW",
+                            "proName": "FX_IDC:USDKRW"
+                        }
+                    ],
+                    "colorTheme": "light",
+                    "showSymbolLogo": true,
+                    "displayMode": "adaptive",
+                    "locale": "en"
+                }
+            </script>
+        </div>
+        <!-- TradingView Widget END -->
+    </div>
     <div class="col-lg-3 col-md-6 m-b-10">
         <div class="dashboard-w1 bg--primary b-radius--10 box-shadow rounded">
             <div class="icon">

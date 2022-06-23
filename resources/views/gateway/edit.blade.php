@@ -81,7 +81,7 @@
             <div class="card">
                 <div class="card-body">
                     <form class="payment-gateway" action="{{ route('payment.update', $gateway->id) }}" method="POST" enctype="multipart/form-data">
-                    {!! csrf_field() !!}
+                    {{ csrf_field() }}
 
                     <div class="payment-method-item">
                         <div class="payment-method-header">
@@ -105,23 +105,29 @@
                                     </div>
                                     <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
                                         <div class="form-group">
-                                            <label class="control-label" for="methodcurrency">Currency <span class="text-danger">*</span></label>
-                                            <input type="text" id="methodcurrency" name="method_currency" class="form-control" placeholder="Currency" value="{{ $gateway->currency }}">
+                                            <label class="control-label" for="gatewayname">Gateway Code <span class="text-danger">*</span></label>
+                                            <input type="text" id="gatewaycode" name="gateway_code" class="form-control" placeholder="Method Code" value="{{ $gateway->code }}">
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
                                         <div class="form-group">
-                                            <label class="control-label" for="methodrate">Rate <span class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <div class="input-group-addon">1 USD =</div>
-                                                <input type="text" class="form-control method_rate" id="methodrate" name="method_rate" value="{{ round($gateway->rate, 2) }}" placeholder="0">
-                                                <div class="input-group-addon"><span class="currency_symbol">{{ $gateway->currency }}</span></div>
-                                            </div>
+                                            <label class="control-label" for="methodcurrency">Currency <span class="text-danger"></span></label>
+                                            <input type="text" id="methodcurrency" name="method_currency" class="form-control" placeholder="Currency" value="{{ $settings->currency }}" readonly>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-12 col-lg-6 col-xl-4 bt-switch">
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="methodrate">Conversion Rate <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon">1 USD =</div>
+                                                <input type="text" class="form-control method_rate" id="methodrate" name="method_rate" value="{{ $settings->conversion_rate }}" placeholder="0" readonly>
+                                                <div class="input-group-addon"><span class="currency_symbol">{{ $settings->currency }}</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-6 col-xl-4 bt-switch m-t-30">
                                         <input type="checkbox" name="is_crypto" checked data-on-color="primary" data-off-color="warning" data-on-text="Crypto" data-off-text="Fiat">
                                     </div>
                                 </div>
@@ -155,8 +161,8 @@
                         <div class="col-md-6">
                             <div class="card card-outline-info">
                                 <div class="card-header">
-                                    <h4 class="m-b-0 text-white pull-left">Additional User Input</h4>
-                                    <button type="button" class="btn waves-effect waves-light btn-outline-primary btn-sm pull-right text-right addUserData"><i class="fa fa-fw fa-plus"></i> Add New</button>
+                                    <h4 class="m-b-0 text-white pull-left">Additional Input</h4>
+                                    <button type="button" class="btn btn-outline-primary btn-xs pull-right text-right addUserData"><i class="fa fa-fw fa-plus"></i> Add New</button>
                                 </div>
                                 <div class="card-body">
                                     <div class="addedField">

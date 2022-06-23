@@ -46,6 +46,12 @@
     .mytooltip {
         z-index: 0;
     }
+    .account-settings-card-header {
+        color: #31708f;
+        background-color: #d9edf7;
+        border: 1px solid #bce8f1;
+        border-color: #bce8f1;
+    }
 </style>
 @endsection
 
@@ -118,7 +124,7 @@
         </div>
         <div class="col-xl-8">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header account-settings-card-header">
                     Account Information
                 </div>
                 <div class="card-body">
@@ -130,7 +136,7 @@
     <div class="row">
         <div class="col-lg-4">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header account-settings-card-header">
                     Account Information
                 </div>
                 <div class="card-body">
@@ -186,7 +192,7 @@
         </div>
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header account-settings-card-header">
                    Payment Method
                 </div>
                 <div class="card-body">
@@ -194,7 +200,21 @@
                         @foreach ($payment_method as $method)
                             <div class="form-group row">
                                 <label class="col-sm-3 control-label">
-                                    <a class="mytooltip" href="javascript:void(0)"> {{ $method->name }}
+                                    <span class="mytooltip tooltip-effect-1">
+                                        <span class="tooltip-item2"> {{ $method->name }} </span>
+                                        <span class="tooltip-content4 text-center clearfix">
+                                            <span class="tooltip-text2">
+                                                <strong>Deposit Limit (USD)</strong><br/> 
+                                                <strong>Min : </strong><span class="label label-info">{{ number_format($method->min_amount) }} USD</span>
+                                                <strong>Max : </strong><span class="label label-warning">{{ number_format($method->max_amount) }} USD</span>
+                                                <hr>
+                                                <strong>Deposit Limit (KRW)</strong><br/> 
+                                                <strong>Min : </strong><span class="label label-info">{{ number_format($method->min_amount * $method->rate) }} KRW</span>
+                                                <strong>Max : </strong><span class="label label-warning">{{ number_format($method->max_amount * $method->rate) }} KRW</span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                    {{-- <a class="mytooltip" href="javascript:void(0)"> {{ $method->name }}
                                         <span class="tooltip-content5">
                                             <span class="tooltip-text3">
                                                 <span class="tooltip-inner2">Deposit Limit (USD)<br/> 
@@ -207,10 +227,10 @@
                                                 </span>
                                             </span>
                                         </span>
-                                    </a>
+                                    </a> --}}
                                 </label>
                                 <div class="col-sm-9">
-                                    <div class="input-group">
+                                    <div class="input-group {{ $method->parameter != '' ? 'has-success' : '' }}">
                                         <input type="text" name="address[]" data-id="{{ $method->id }}" class="form-control address" placeholder="Enter Depositing Address" value="{{ $method->parameter ?? '' }}">
                                         <img src="{{ URL::asset('assets/images/gateway') }}/{{ $method->image }}" alt="image" width="45" height=40 class="input-group-addon">
                                     </div>

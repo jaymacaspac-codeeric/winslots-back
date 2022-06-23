@@ -18,6 +18,7 @@ use App\Http\Controllers\DepositController;
 use App\Http\Controllers\PaymentGatewayController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\AccountSettingsController;
+use App\Http\Controllers\SettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,9 +105,12 @@ Route::get('/agent-tree', [AgentController::class, 'populateAgentTree'])->name('
 // DEPOSIT AND WITHDRAW
 Route::post('/deposit/request', [DepositController::class, 'agentRequestDeposit'])->name('deposit.request');
 Route::get('/deposit/pending', [DepositController::class, 'pendingDeposit'])->name('deposit.pending');
+Route::get('/deposit/pending/list', [DepositController::class, 'pendingDepositList'])->name('deposit.pending.list');
 Route::get('/deposit/approved', [DepositController::class, 'approvedDeposit'])->name('deposit.approved');
 Route::get('/deposit/rejected', [DepositController::class, 'rejectedDeposit'])->name('deposit.rejected');
 Route::get('/deposit/log', [DepositController::class, 'logDeposit'])->name('deposit.log');
+Route::post('/deposit/approve', [DepositController::class, 'approve'])->name('deposit.approve');
+Route::post('/deposit/reject', [DepositController::class, 'reject'])->name('deposit.reject');
 
 Route::post('/witdrawals/request', [DepositController::class, 'agentRequestWitdrawals'])->name('withdrawals.request');
 Route::get('/witdrawals/pending', [DepositController::class, 'pendingWitdrawals'])->name('withdrawals.pending');
@@ -120,5 +124,8 @@ Route::get('/commission/bet', [CommissionController::class, 'betResult'])->name(
 
 Route::get('placeholder-image/{size}', [SiteController::class, 'placeholderImage'])->name('placeholder.image');
 
-Route::get('/account/settings', [AccountSettingsController::class, 'index'])->name('account.settings');
+//SETTINGS
 Route::post('/account/settings/address/save', [AccountSettingsController::class, 'saveDepositingMethod'])->name('method.save');
+Route::get('/account/settings', [AccountSettingsController::class, 'index'])->name('account.settings');
+Route::get('/settings/general', [SettingsController::class, 'generalSettings'])->name('settings.general');
+Route::post('/settings/general', [SettingsController::class, 'updateGeneralSettings'])->name('settings.general.update');

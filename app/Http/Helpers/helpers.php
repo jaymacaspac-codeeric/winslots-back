@@ -148,6 +148,13 @@ function getImage($image,$size = null) {
 }
 
 function imagePath() {
+    $data['logo'] = [
+        'path' => 'assets/images/logo',
+        'size' => '250x250',
+    ];
+    $data['favicon'] = [
+        'size' => '128x128',
+    ];
     $data['gateway'] = [
         'path' => 'assets/images/gateway',
         'size' => '800x800',
@@ -169,27 +176,6 @@ function imagePath() {
             'size' => '800x800',
         ]
     ];
-    $data['ticket'] = [
-        'path' => 'assets/support',
-    ];
-    $data['language'] = [
-        'path' => 'assets/images/lang',
-        'size' => '64x64'
-    ];
-    $data['logoIcon'] = [
-        'path' => 'assets/images/logoIcon',
-    ];
-    $data['favicon'] = [
-        'size' => '128x128',
-    ];
-    $data['extensions'] = [
-        'path' => 'assets/images/extensions',
-        'size' => '36x36',
-    ];
-    $data['seo'] = [
-        'path' => 'assets/images/seo',
-        'size' => '600x315'
-    ];
     $data['profile'] = [
         'user'=> [
             'path'=>'assets/images/user/profile',
@@ -199,11 +185,6 @@ function imagePath() {
             'path'=>'assets/admin/images/profile',
             'size'=>'400x400'
         ]
-    ];
-    $data['lottery'] = [
-        'path'=>'assets/images/lottery',
-        'size'=>'128x123'
-
     ];
     return $data;
 }
@@ -253,11 +234,7 @@ function format_datatable($dataTable,$total,$fieldNames) {
         $cells .= '["';
 
         for ($i =0 ; $i < $fieldNamesCount; $i++) {
-            if($fieldNames[$i] == 'balance') {
-                $cells .= str_replace('"','\"', number_format($row['balance'], 0));
-            } else {
-                $cells .= str_replace('"','\"',$row[$fieldNames[$i]]);
-            }
+            $cells .= str_replace('"','\"',$row[$fieldNames[$i]]);
 
             if ($i != $fieldNamesCount - 1)
                 $cells .=  '","';
@@ -283,6 +260,17 @@ function format_datatable($dataTable,$total,$fieldNames) {
             '}';
 
     return $json_data ;
+}
+
+function getTrx($length = 3)
+{
+    $characters = 'ABCDEFGHJKMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
 }
 
 ?>
