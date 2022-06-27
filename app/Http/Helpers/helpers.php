@@ -265,6 +265,12 @@ function format_datatable($dataTable,$total,$fieldNames) {
     return $json_data;
 }
 
+function getSiteSettings() {
+    $site = DB::table('set_site')->first();
+    
+    return $site;
+}
+
 function getTrx($length = 3)
 {
     $characters = 'ABCDEFGHJKMNOPQRSTUVWXYZ';

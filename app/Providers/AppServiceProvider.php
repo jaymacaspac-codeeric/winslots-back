@@ -47,10 +47,11 @@ class AppServiceProvider extends ServiceProvider
 
 
             $view->with([
-                'rate'           => getAgentRate(),
-                'admin'          => getAdmin(),
-                'paymentMethod'  => getPaymentMethod(),
-                'pending_deposits_count' => $pending_deposit_count
+                'site'                      => getSiteSettings(),
+                'rate'                      => getAgentRate(),
+                'admin'                     => getAdmin(),
+                'paymentMethod'             => getPaymentMethod(),
+                'pending_deposits_count'    => $pending_deposit_count
             ]);
         });
     }

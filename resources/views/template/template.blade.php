@@ -82,7 +82,7 @@
                             <li class="nav-item m-t-10">
                                 <a href="javascript:void(0)" data-iziModal-open="#depositModal1" class="btn btn-outline-success waves-effect waves-light text-white m-l-20 request-deposit"><i class="fa fa-download"></i> Deposit</a>
                                 {{-- <a href="javascript:void(0)" data-toggle="modal" data-target="#depositModal" class="btn btn-outline-success waves-effect waves-light text-white m-l-20 request-deposit"><i class="fa fa-download"></i> Deposit</a> --}}
-                                <a href="javascript:void(0)" class="btn btn-outline-warning waves-effect waves-light text-white m-l-20 request-withdrawal"><i class="fa fa-upload"></i> Withdraw</a>
+                                <a href="javascript:void(0)" data-iziModal-open="#withdrawModal" class="btn btn-outline-warning waves-effect waves-light text-white m-l-20 request-withdrawal"><i class="fa fa-upload"></i> Withdraw</a>
                             </li>
                         @endif
                         <!-- ============================================================== -->
@@ -396,19 +396,19 @@
                 @yield('content')
 
                 <!-- Row -->
-                <div id="depositModal1" class="iziModal" data-izimodal-title="Deposit Request - Rate: <span class='badge badge-danger'>{{ $rate }}%</span>">
+                <div id="depositModal1" class="iziModal" data-izimodal-title="Request Deposit - Rate: <span class='badge badge-danger'>{{ $rate }}%</span>">
                     <div class="">
 
                         <form class="form-horizontal request-deposit-form" role="form">
                             {!! csrf_field() !!}
                             <input type="hidden" class="exchangeRate" name="rate" value="{{ $rate }}">
-                            <input type="hidden" class="address" name="address" value="">
+                            <input type="hidden" class="paymentAddress" name="address" value="">
                             
                             <span>STEP 1: Select a Deposit Method</span>
 
                             <div class="radio-tile-group text-center row m-b-20 m-t-20">
                                 @foreach ($paymentMethod as $method)
-                                    <div class="input-container col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                    <div class="input-container col-lg-{{ 12 / count($paymentMethod) }} col-md-{{ 12 / count($paymentMethod) }} col-sm-{{ 12 / count($paymentMethod) }} col-{{ 12 / count($paymentMethod) }}">
                                         <input id="{{ $method->code }}" class="radio-button" type="radio" name="method" data-id="{{ $method->id }}" data-name="{{ $method->name }}" data-img="{{ $method->image }}" data-params="{{ $method->parameter }}" value="{{ $method->name }}" />
                                         <div class="radio-tile">
                                             <img src="{{ URL::asset('assets/images/gateway') }}/{{ $method->image }}" class="method-logo">
@@ -420,7 +420,7 @@
                             <span>STEP 2: Select a Deposit Amount</span>
 
                             <div class="radio-tile-group text-center row m-t-20">
-                                <div class="input-container col-sm-3">
+                                <div class="input-container col-sm-3 col-6">
                                     <input id="100000" class="radio-button" type="radio" name="amount" value="100000" />
                                     <div class="radio-tile">
                                         <div class="icon walk-icon">
@@ -430,7 +430,7 @@
                                     </div>
                                 </div>
                             
-                                <div class="input-container col-sm-3">
+                                <div class="input-container col-sm-3 col-6">
                                     <input id="500000" class="radio-button" type="radio" name="amount" value="500000" />
                                     <div class="radio-tile">
                                         <div class="icon bike-icon">
@@ -440,7 +440,7 @@
                                     </div>
                                 </div>
 
-                                <div class="input-container col-sm-3">
+                                <div class="input-container col-sm-3 col-6">
                                     <input id="1000000" class="radio-button" type="radio" name="amount" value="1000000" />
                                     <div class="radio-tile">
                                         <div class="icon bike-icon">
@@ -449,7 +449,7 @@
                                         <label for="1000000" class="radio-tile-label">1,000,000</label>
                                     </div>
                                 </div>
-                                <div class="input-container col-sm-3">
+                                <div class="input-container col-sm-3 col-6">
                                     <input id="10000000" class="radio-button" type="radio" name="amount" value="10000000" />
                                     <div class="radio-tile">
                                         <div class="icon bike-icon">
@@ -510,38 +510,43 @@
                 </div>
 
                 <div id="depositAddressModal1" class="iziModal1">
-                    <div class="modal-body">
-                        <div><span class="payment-amount text-primary"></span> </div>
-
-                            <div class="payment-container row">
-                                <div class="col-lg-6 col-xs-6">
-                                    <div class="coint-img">
-                                        <img src="" class="deposit-method-img">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-xs-6">
-                                    <div class="qrcode-container text-center">
-                                        <div class="qrcode" id="qrcode" style="width:150px; height:150px; margin:15px auto;"></div>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-12">
-									<div class="crypto-address-container text-center">
-						                <span class="crypto-address" id="crypto-address"></span><br/>
-                                        <button type="button" class="btn waves-effect waves-light btn-warning copy-clipboard">Copy Address</button>
-						            </div>	
-								</div>
-
-                                <div class="col-lg-12 col-lg-12">
-									<div class="payment-amount-container text-center">
-                                            
-						            </div>	
-								</div>
+                    <div class="payment-container row">
+                        <div class="col-lg-6 col-6">
+                            <div class="coint-img">
+                                <img src="" class="deposit-method-img">
                             </div>
-
-                            <div class="address-container row text-center">
-
+                        </div>
+                        <div class="col-lg-6 col-6">
+                            <div class="qrcode-container text-center">
+                                <div class="qrcode" id="qrcode" style="width:150px; height:150px; margin:15px auto;"></div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="address-container row text-center">
+                        <div class="col-lg-12">
+                            <div class="crypto-address-container text-center">
+                                <span class="crypto-address" id="crypto-address"></span><br/>
+                                <button type="button" class="btn waves-effect waves-light btn-warning copy-clipboard">Copy Address</button>
+                            </div>	
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <div class="payment-amount-container text-center">
+                            <div class="payment-preview p-10 m-t-10 m-b-10">
+                                <div class="row">
+                                    <div class="col-4 text-left">Amount : </div>
+                                    <div class="col-8 recharge-amount-preview">0 Pot</div>
+                                    <div class="col-4 text-left">Payable : </div>
+                                    <div class="col-8">0 USD</div>
+                                    <div class="col-4 text-left">Conversion Rate : </div>
+                                    <div class="col-8">1 USD = {{ $site->conversion_rate }}</div>
+                                    <div class="col-4 text-left">In {{ $site->currency }} : </div>
+                                    <div class="col-8 krw-total-amount">0 KRW</div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn waves-effect waves-light btn-info confirm-payment" data-izimodal-close="">Confirm</button>
+                        </div>	
                     </div>
                 </div>
 
@@ -658,6 +663,7 @@
             padding: 20,
             headerColor: '#238bf7',
             zindex: 999,
+            overlayClose: false,
             onOpening: function() {
                 depositModal.iziModal('startLoading');
                 $.ajax({
@@ -682,7 +688,7 @@
         }); 
         
         var addressModal = $('#depositAddressModal1').iziModal({
-                    width: 700,
+                    width: 600,
                     radius: 5,
                     padding: 20,
                     headerColor: '#238bf7',
@@ -723,7 +729,7 @@
 
         $(document).on('change', 'input:radio[name="method"]', function() {
             deposit_method = $('input[name="method"]:checked').val();
-            $('.address').val($('input[name="method"]:checked').data('params'));
+            $('.paymentAddress').val($('input[name="method"]:checked').data('params'));
         });
 
         $(document).on('click', '.submit-request-deposit',function() {
@@ -762,7 +768,7 @@
                         type: 'POST',
                         data: $('.request-deposit-form').serialize(),
                         success: function(data) {
-                            if(data != 'Invalid captcha') {
+                            if(data != 'invalid') {
                                 var params = $('input[name="method"]:checked').data('params');
                                 var img = $('input[name="method"]:checked').data('img');
                                 depositModal.iziModal('close');
@@ -770,19 +776,27 @@
                                 addressModal.iziModal('startLoading');
                                 addressModal.iziModal('setTitle', 'Request Deposit');
                                 addressModal.iziModal('open');
-                                addressModal.on('opened', function (e) {
-                                    $(".deposit-method-img").attr("src", "{{ URL::asset('assets/images/gateway') }}" + '/'+img);
-                                    $('.crypto-address').html(params);
-                                    $('.payment-amount').html(payment_amount + ' KRW');
-                                    var qrcode = new QRCode("qrcode", {
+                                var qrcode = new QRCode("qrcode", {
                                                 width : 150,
                                                 height : 150,
                                                 colorDark : "#000000",
                                                 colorLight : "#ffffff",
                                                 correctLevel : QRCode.CorrectLevel.H
                                             });
+                                            
+                                addressModal.on('opened', function (e) {
+                                    $(".deposit-method-img").attr("src", "{{ URL::asset('assets/images/gateway') }}" + '/'+img);
+                                    $('.crypto-address').html(params);
+                                    $('.recharge-amount-preview').html(data['deposit_charge_amount'] + ' Pot');
+                                    $('.krw-total-amount').html(data['deposit_amount'] + ' KRW');
+
                                     qrcode.makeCode(data['address']); 
                                     addressModal.iziModal('stopLoading');
+                                });
+
+                                addressModal.on('closed', function (e) {
+                                    console.log('closed');
+                                    qrcode.clear()
                                 });
                             } else {
                                 iziToast.error({

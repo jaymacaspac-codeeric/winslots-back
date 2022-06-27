@@ -91,7 +91,7 @@ class DepositController extends Controller
         if(isset($request->captcha)){
             if(!captchaVerify($request->captcha, $request->captcha_secret)){
                 $notify[] = ['error',"Invalid captcha"];
-                return 'Invalid captcha';
+                return 'invalid';
             } else {
                 $deposit = DB::table('info_deposit')->insert([
                     // 'transaction_id'    => getTrx() . time() . session('id'),
