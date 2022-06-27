@@ -8,6 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta http-equiv="cache-control" content="private, max-age=0, no-cache">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{{ URL::asset('assets/images/logo.png') }}">
     <title>WINSLOTS</title>
@@ -48,7 +51,7 @@
                             @endif
                             <div class="form-group">
                                 <div class="col-xs-12">
-                                    <input type="text" class="form-control" name="username" placeholder="Username"> 
+                                    <input type="text" class="form-control" name="username" placeholder="Username" autocomplete="off"> 
                                 </div>
                             </div>
                             <div class="form-group">

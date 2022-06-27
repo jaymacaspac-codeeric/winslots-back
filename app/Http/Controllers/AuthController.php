@@ -11,9 +11,13 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function index() {
-        return view('auth.login');
-    } 
+    public function index(Request $request) {
+        if(!$request->session()->has('username')) {
+            return view('auth.login');
+        } else {
+            return redirect()->intended('dashboard');
+        }
+    }
 
     public function username() {
         return 'username'; //or return the field which you want to use.

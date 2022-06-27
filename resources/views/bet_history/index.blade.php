@@ -3,6 +3,8 @@
 @section('custom-css')
 <link href="../assets/plugins/toast-master/css/jquery.toast.css" rel="stylesheet">
 <link href="../assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+<link href="{{ URL::asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') }}" rel="stylesheet">
+
 <style>
     .bet_history_table thead th {
         /* font-size: 12px; */
@@ -27,52 +29,16 @@
 </style>
 @endsection
 
-@section('agent-info')
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-holding-balance">
-                                {{ number_format($balance, 0) }}
-                            </span> Pot</span></h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-user-holding-balance">
-                                {{ number_format($totalBalance), 0 }}
-                            </span> Pot</span></h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-@endsection
 
 @section('breadcrumb')
     <div class="row page-titles">
         <div class="col-md-5 align-self-center">
-            <h3 class="text-themecolor">User List</h3>
+            <h3 class="text-themecolor">Bet History</h3>
         </div>
         <div class="col-md-7 align-self-center">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                <li class="breadcrumb-item active">User List</li>
+                <li class="breadcrumb-item active">Bet History</li>
             </ol>
         </div>
     </div>
@@ -91,6 +57,22 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <span class="input-group-text">기간</span>
+                                    </div>
+                                    <input type="text" class="form-control start-date" value="" placeholder="yyyy-mm-dd">
+                                    <span class="input-group-addon bg-info b-0 text-white">to</span>
+                                    <input type="text" class="form-control end-date" value="" placeholder="yyyy-mm-dd">
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <a class="btn btn-info m-b-10 text-white search-by-date">Search</a>
+                            </div>
+                        </div>
+                        
                         <table id="bet_history_table" class="bet_history_table display table table-hover table-bordered" cellspacing="0" width="100%" style="font-size: 14px;">
                             <thead>
                                 <tr>
@@ -132,6 +114,7 @@
     <script src="{{ URL::asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ URL::asset('assets/plugins/toast-master/js/jquery.toast.js') }}"></script>
     <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+    <script src="{{ URL::asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
 
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
@@ -142,6 +125,33 @@
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <script>
+        var start = moment().subtract(14, 'days').format('YYYY-MM-DD');
+        var end = moment().format('YYYY-MM-DD');
+        
+        $('.start-date').val(start);
+        $('.end-date').val(end);
+
+        $('.start-date').datepicker({
+            format: 'yyyy-mm-dd',
+            // startDate: '-14d',
+            toggleActive: true,
+            // todayHighlight: true
+        }).on('changeDate', function(e) {
+            start = $(this).val();
+        });
+
+        $('.end-date').datepicker({
+            format: 'yyyy-mm-dd',
+            toggleActive: true,
+        }).on('changeDate', function(e) {
+            end = $(this).val();
+        });
+
+        $('.search-by-date').on('click', function() {
+            console.log(table);
+            table.ajax.reload();
+        });
+
         var table =
             $('#bet_history_table').DataTable({
                 dom: 'Bfrtip',
@@ -160,32 +170,62 @@
                 ],
                 // "ordering": false,
                 "ajax": {
-                    "url": "{{ url('/bet-history/list') }}"
+                    // "url": "{{ url('/bet-history/list') }}",
+                    url: "https://api.honorlink.org/api/transaction-list-simple",
+                    headers: {
+                        'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+                    },
+                    type: 'GET',
+                    "data"   : function( d ) {
+                        d.start     = start + ' 00:00:00';
+                        d.end       = end + ' 23:59:59';
+                        d.page      = '1';
+                        d.perPage   = '1000';
+                    },
+                    "dataSrc": function (json) {
+                        const chunk = (arr, size) =>
+                                        Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+                                            arr.slice(i * size, i * size + size)
+                                        );
+                        return chunk(json['data'], 2);
+                    }
                 },
                 "columnDefs": [{
                         "targets": [0, 1, 2, 5, 6],
                         "orderable": false
                     },
                     {
+                        "targets": 0,
+                        "render": function(data, type, full, meta) {
+                            return full[0]['id'];
+                        }
+                    },
+                    {
+                        "targets": 1,
+                        "render": function(data, type, full, meta) {
+                            return full[0]['user']['username'];
+                        }
+                    },
+                    {
                         "targets": 2,
                         "render": function(data, type, full, meta) {
-                            return '<span class="badge badge-pill badge-success" title="Vendor">' + full[8] +
-                                '</span> <span class="badge badge-pill badge-info" title="Game Type">' + full[10] + '</span></br><b>' + data + '</b></br>' +
-                                '<code title="Game ID" style="font-size: 80%">' + full[9] +
-                                '</code></br><code title="Game Round" style="font-size: 80%">' + full[11] +
+                            return '<span class="badge badge-pill badge-success" title="Vendor">' + full[0]['details']['game']['vendor'] +
+                                '</span> <span class="badge badge-pill badge-info" title="Game Type">' + full[0]['details']['game']['type'] + '</span></br><b>' + full[0]['details']['game']['title'] + '</b></br>' +
+                                '<code title="Game ID" style="font-size: 80%">' + full[0]['details']['game']['id'] +
+                                '</code></br><code title="Game Round" style="font-size: 80%">' + full[0]['details']['game']['round'] +
                                 '</code>';
                         }
                     },
                     {
                         "targets": 3,
                         "render": function(data, type, full, meta) {
-                            return moment(full[4]).add(1, 'hour').format("YYYY-MM-DD HH:mm:ss");
+                            return moment(full[0]['processed_at']).add(1, 'hour').format("YYYY-MM-DD HH:mm:ss");
                         }
                     },
                     {
                         "targets": 4,
                         'render': function(data, type, full, meta) {
-                            return moment(full[5]).add(1, 'hour').format("YYYY-MM-DD HH:mm:ss");
+                            return moment(full[1]['processed_at']).add(1, 'hour').format("YYYY-MM-DD HH:mm:ss");
                         }
                     },
                     {
@@ -194,15 +234,15 @@
                             return '<div class="user-betting-details"><table class=table-bet><tbody>' +
                                 '<tr>' +
                                 '<td>Bet Amount</td>' +
-                                '<td class="text-right">' + full[13] + '<code> Pot</code></td>' +
+                                '<td class="text-right">' + Math.abs(full[0]['amount']) + '<code> Pot</code></td>' +
                                 '</tr>' +
                                 '<tr>' +
                                 '<td>Winning Amount</td>' +
-                                '<td class="text-right">' + full[14] + ' Pot</td>' +
+                                '<td class="text-right">' + full[1]['amount'] + ' Pot</td>' +
                                 '</tr>' +
                                 '<tr>' +
                                 '<td>Profit and Loss</td>' +
-                                '<td class="text-right">' + (full[14] - full[13]) + '<code> Pot</code></td>' +
+                                '<td class="text-right">' + (full[0]['amount'] - full[1]['amount']) + '<code> Pot</code></td>' +
                                 '</tr>' +
                                 '</tbody</table></div>';
                         }
@@ -212,7 +252,7 @@
                         "className": 'text-center',
                         'render': function(data, type, full, meta) {
                             if (full[10] != 'slot') {
-                                return '<button type="button" data-id="' + full[0] + '" data-name="' + full[1] +
+                                return '<button type="button" data-id="' + full[0]['id'] + '" data-name="' + full[0]['user']['username'] +
                                     '" data-toggle="modal" data-target="#betDetails" class="btn waves-effect waves-light btn-sm btn-info">Details</button>';
                             } else {
                                 return 'No details available.';
@@ -221,7 +261,7 @@
                     }
                 ],
                 "initComplete": function(settings, json) {
-                    var cnt = table.ajax.json()['aaData'].length;
+                    // var cnt = table.ajax.json()['aaData'].length;
 
                     // if (table.ajax.json()['aaData'].length == 0) {
                     //     $('.dataTables_empty').text('[Too Many Request] 지정된 요청 간격 이상으로 API를 호출 하실 수 없습니다.30초 동안 기다려 주십시오.');
@@ -239,7 +279,10 @@
                 var id = $(e.relatedTarget).data('id');
 
                 $.ajax({
-                    url: '{{ url('bet-history/details') }}',
+                    url: "https://api.honorlink.org/api/transaction-detail",
+                    headers: {
+                        'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+                    },
                     type: 'GET',
                     data: {
                         'id': id
@@ -247,9 +290,14 @@
                     beforeSend: function() {
 
                     },
-                    success: function(data) {
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.status);
+                        $('#betDetails').modal('hide');
+                        swal("Failed", "너무 오래된 내역을 조회가 불가능합니다.", "error");
+                    },
+                    success: function(data, textStatus, xhr) {
                         // var data = $.parseJSON(data);
-                        var details = data['data'];
+                        var details = data;
                         var status_code = data['status_code'];
                         console.log(data);
                         if (jQuery.isEmptyObject(details) && status_code == 200) {

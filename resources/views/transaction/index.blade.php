@@ -27,43 +27,6 @@
 </style>
 @endsection
 
-@section('agent-info')
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-holding-balance">
-                                {{ number_format($balance, 0) }}
-                            </span> Pot</span></h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-user-holding-balance">
-                                {{ number_format($totalBalance), 0 }}
-                            </span> Pot</span></h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-@endsection
-
 @section('breadcrumb')
     <div class="row page-titles">
         <div class="col-md-5 align-self-center">
@@ -167,22 +130,57 @@
                     responsive: true,
                     "order": [[ 0, "desc" ]],
                     "ajax": {
-                        "url": "{{ url('/transaction/list') }}",
-                        // "type": "POST",
-                        // "data" : {
-                        //     "cmd" : "get_transaction_history",
-                        //     "start":  "2022-05-05 11:18:52" // static date
-                        // }
+                        // "url": "{{ url('/transaction/list') }}",
+                        url: "https://api.honorlink.org/api/transactions",
+                        headers: {
+                            'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD'
+                        },
+                        type: 'GET',
+                        data: {
+                            start: '2022-05-16 11:18:52',
+                            end: '2022-05-25 11:18:52',
+                            page: '1',
+                            perPage: '1000',
+                            withDetails: 0
+                        },
+                        "dataSrc": function (json) {
+                            console.log(json);
+                            function search(nameKey, myArray){
+                                var result = [];
+                                for (var i=0; i < myArray.length; i++) {
+                                    if (myArray[i]['type'] == nameKey[0] || myArray[i]['type'] == nameKey[1]) {
+                                        result.push(myArray[i]);
+                                    }
+                                }
+                                return result;
+                            }
+
+                            var transactions = search(['agent.add_balance', 'agent.subtract_balance'], json['data']);
+                            console.log(transactions);
+                            return transactions;
+                        }
                     },
                     "columnDefs": [
+                        {
+                            "targets": 0,
+                            "render": function(data, type, full, meta) {
+                                return full['id'];
+                            }
+                        },
+                        {
+                            "targets": 1,
+                            "render": function(data, type, full, meta) {
+                                return full['user']['username'];
+                            }
+                        },
                         {
                             "targets": 2,
                             "render": function(data, type, full, meta) {
                                 var result = '';
-                                if(data == 'User money recharge') {
-                                    result = '<span class="text-primary font-light">'+ data + '</span>'
+                                if(full['type'] == 'agent.add_balance') {
+                                    result = '<span class="text-primary font-light">Deposit</span>'
                                 } else {
-                                    result = '<span class="text-danger font-light">'+ data + '</span>'
+                                    result = '<span class="text-danger font-light">Withdraw</span>'
                                 }
                                 return result;
                             }
@@ -190,17 +188,17 @@
                         {
                             "targets": 3,
                             "render": function(data, type, full, meta) {
-                                return data + ' Pot';
+                                return full['before'] + ' Pot';
                             }
                         },
                         {
                             "targets": 4,
                             'render': function(data, type, full, meta) {
                                 var result = '';
-                                if(data > 0) {
-                                    result = '<span class="text-primary">'+ data + ' Pot</span>'
+                                if(full['amount'] > 0) {
+                                    result = '<span class="text-primary">'+ full['amount'] + ' Pot</span>'
                                 } else {
-                                    result = '<span class="text-danger">'+ data + ' Pot</span>'
+                                    result = '<span class="text-danger">'+ full['amount'] + ' Pot</span>'
                                 }
                                 return result;
                             }
@@ -208,23 +206,29 @@
                         {
                             "targets": 5,
                             'render': function(data, type, full, meta) {
-                                return data + ' Pot';
+                                var result = '';
+                                if(full['amount'] > 0) {
+                                    result = full['amount'] + full['before'];
+                                } else {
+                                    result = full['amount'] - Math.abs(full['before']);
+                                }
+                                return result + ' Pot';
                             }
                         },
                         {
                             "targets": 6,
                             'render': function(data, type, full, meta) {
-                                return moment(data).add(1, 'hour').format("YYYY-MM-DD hh:mm");
+                                return moment(full['processed_at']).add(1, 'hour').format("YYYY-MM-DD hh:mm");
                             }
                         },
                         {
                             "targets": 7,
                             'render': function(data, type, full, meta) {
                                 var result = '';
-                                if(data == 'success') {
+                                if(full['status'] == 'success') {
                                     result = '<span class="label label-success">done</span>';
                                 } else {
-                                    result = '<span class="label label-danger">'+data+'</span>';
+                                    result = '<span class="label label-danger">'+full['status']+'</span>';
                                 }
                                 return result;
                             }

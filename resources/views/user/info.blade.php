@@ -27,43 +27,6 @@
 </style>
 @endsection
 
-@section('agent-info')
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">현재 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-holding-balance">
-                                {{ number_format($balance, 0) }}
-                            </span> Pot</span></h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-    <li>
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-l-10 hidden-md-down">
-                <div class="chart-text m-r-10">
-                    <span class="m-b-0 text-white" style="font-size: 12px;">하부 유저 현재 총 보유 금액</span>
-                    <h4 class="m-t-0 text-warning text-right"><span class="badge badge-success"><span
-                                class="total-user-holding-balance">
-                                {{ number_format($totalBalance), 0 }}
-                            </span> Pot</span></h4>
-                </div>
-                <div class="spark-chart">
-                    <div id="monthchart"></div>
-                </div>
-            </div>
-        </div>
-    </li>
-    <div class="topbar-divider d-none d-lg-block"></div>
-@endsection
-
 @section('breadcrumb')
     <div class="row page-titles">
         <div class="col-md-5 align-self-center">
@@ -84,27 +47,35 @@
             <div class="card">
                 <div class="card-body">
                     <small class="text-muted">User Number </small>
-                    <h6>{{ $user_info['id'] }}</h6>
+                    <h6  class="user-number">
+                        {{-- {{ $user_info['id'] }} --}}
+                    </h6>
                     <small class="text-muted p-t-30 db">Username</small>
-                    <h6>{{ $user_info['username'] }}</h6>
+                    <h6 class="user-name">
+                        {{-- {{ $user_info['username'] }} --}}
+                    </h6>
                     <small class="text-muted p-t-30 db">Agent</small>
-                    <h6>{{ $user_info['agent_id'] }}</h6>
+                    <h6 class="agent">
+                        {{-- {{ $user_info['agent_id'] }} --}}
+                    </h6>
                     <small class="text-muted p-t-30 db">Password</small>
                     <div class="input-group">
                         <input type="hidden" value="">
                         <input type="text" name="passw" class="form-control pw" placeholder="Password">
-                        <a href="javascript:void(0)" class="input-group-addon btn btn-danger change-password"
-                            style="color:#fff;"><i class="fa fa-refresh fa-spin password-loading"
-                                style="display: none;"></i>&nbsp; <span class="check-label"> Change</span></a>
+                        <a href="javascript:void(0)" class="input-group-addon btn btn-danger change-password" style="color:#fff;"><i class="fa fa-refresh fa-spin password-loading" style="display: none;"></i>&nbsp; <span class="check-label"> Change</span></a>
                     </div>
                     <small class="text-muted p-t-30 db">Last Login </small>
-                    <h6>{{ date("Y-m-d H:i", strtotime($user_info['last_access_at'])) }}</h6>
+                        <h6 class="last-login">
+                        {{-- {{ date("Y-m-d H:i", strtotime($user_info['last_access_at'])) }} --}}
+                        </h6>
                     <small class="text-muted p-t-30 db">Created Date</small>
-                    <h6>{{ date("Y-m-d H:i", strtotime($user_info['created_at'])) }}</h6>
+                        <h6 class="created-at">
+                        {{-- {{ date("Y-m-d H:i", strtotime($user_info['created_at'])) }} --}}
+                        </h6>
                     <small class="text-muted p-t-30 db">Holding Money</small>
                     <div>
-                        <span class="font-weight-bold">
-                            {{ number_format($user_info['balance'], 0) }} Pot
+                        <span class="font-weight-bold user-holding-money">
+                            {{-- {{ number_format($user_info['balance'], 0) }} Pot --}}
                         </span>
                         <!-- <div class="btn-group" role="group" aria-label="Charge In / Out" style="color:#fff;">
                                     <a class="btn btn-info user-payment" data-toggle="modal" data-target="#userChargeIn">충전</a>
@@ -121,8 +92,7 @@
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs profile-tab" role="tablist">
                     <!-- <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#home" role="tab">Timeline</a> </li> -->
-                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#bethistory"
-                            role="tab">Bet History</a> </li>
+                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#bethistory" role="tab">Bet History</a> </li>
                     <!-- <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#settings" role="tab">Settings</a> </li> -->
                 </ul>
                 <!-- Tab panes -->
@@ -135,9 +105,7 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table id="bet_history_table"
-                                                    class="bet_history_table display nowrap table table-hover table-bordered"
-                                                    cellspacing="0" width="100%">
+                                                <table id="bet_history_table" class="bet_history_table display nowrap table table-hover table-bordered" cellspacing="0" width="100%">
                                                     <thead>
                                                         <tr>
                                                             <th>Number</th>
@@ -169,8 +137,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="exampleModalLabel1">New User</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form class="form p-t-20 create-user-form">
@@ -178,29 +145,25 @@
                             <label for="exampleInputuname2">User Name*</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" name="username" class="form-control username" placeholder="Username"
-                                    required>
-                                <a class="input-group-addon btn btn-warning check-user" style="color:#fff;"><i
-                                        class="fa fa-refresh fa-spin username-loading" style="display: none;"></i>&nbsp;
-                                    <span class="check-label"> Check</span></a>
+                                <input type="text" name="username" class="form-control username" placeholder="Username" required>
+                                <a class="input-group-addon btn btn-warning check-user" style="color:#fff;"><i class="fa fa-refresh fa-spin username-loading" style="display: none;"></i>&nbsp;
+                                    <span class="check-label"> Check</span>
+                                </a>
                             </div>
-                            <span class="help-block m-b-none text-danger text_user_chk" id="text_user_chk">중복된 사용자 이름 확인이
-                                필요합니다.</span>
+                            <span class="help-block m-b-none text-danger text_user_chk" id="text_user_chk">중복된 사용자 이름 확인이필요합니다.</span>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputpwd2">Password*</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-lock"></i></div>
-                                <input type="password" name="password" autocomplete="off" class="form-control password"
-                                    placeholder="Password" required>
+                                <input type="password" name="password" autocomplete="off" class="form-control password" placeholder="Password" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputpwd2">Nickname*</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-lock"></i></div>
-                                <input type="text" name="nickname" class="form-control nickname" placeholder="Nickname"
-                                    required>
+                                <input type="text" name="nickname" class="form-control nickname" placeholder="Nickname" required>
                             </div>
                         </div>
                         <div class="form-group">
@@ -226,8 +189,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="exampleModalLabel1">유저 머니 지급</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form class="form p-t-20">
@@ -252,8 +214,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="exampleModalLabel1">Collect Money</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form class="form p-t-20">
@@ -305,6 +266,25 @@
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <script>
+        $.ajax({
+            url: "https://api.honorlink.org/api/user",
+            headers: {
+                'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+            },
+            type: 'GET',
+            data: {
+                username: '{{ request()->username }}'
+            },
+            success: function(data) {
+                $('.user-number').text(data['id']);
+                $('.user-name').text(data['username']);
+                $('.agent').text(data['agent_id']);
+                $('.last-login').text(moment(data['last_access_at']).add(1, 'hour').format('YYYY-DD-MM HH:mm'));
+                $('.created-at').text(moment(data['created_at']).add(1, 'hour').format('YYYY-DD-MM HH:mm'));
+                $('.user-holding-money').text(data['balance'] + ' Pot');
+            }
+        });
+
         var table =
             $('#bet_history_table').DataTable({
                 dom: 'Bfrtip',
@@ -323,10 +303,33 @@
                 ],
                 // "ordering": false,
                 "ajax": {
-                    "url": "{{ url('/bet-history/user') }}",
-                    "type": "GET",
-                    "data": {
-                        "username": "{{request()->username}}"
+                    url: "https://api.honorlink.org/api/transaction-list-simple",
+                    headers: {
+                        'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+                    },
+                    type: 'GET',
+                    data: {
+                        start: '2022-05-08 11:18:52',
+                        end: '2022-05-16 11:18:52',
+                        page: '1',
+                        perPage: '1000'
+                    },
+                    "dataSrc": function (json) {
+                        function search(nameKey, myArray){
+                            var result = [];
+                            for (var i=0; i < myArray.length; i++) {
+                                if (myArray[i]['user']['username'] == nameKey) {
+                                    result.push(myArray[i]);
+                                }
+                            }
+                            return result;
+                        }
+                        var test = search("{{ request()->username }}", json['data']);
+                        const chunk = (arr, size) =>
+                                        Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+                                            arr.slice(i * size, i * size + size)
+                                        );
+                        return chunk(test, 2);
                     }
                 },
                 "columnDefs": [{
@@ -334,25 +337,37 @@
                         "orderable": false
                     },
                     {
+                        "targets": 0,
+                        "render": function(data, type, full, meta) {
+                            return full[0]['id'];
+                        }
+                    },
+                    {
+                        "targets": 1,
+                        "render": function(data, type, full, meta) {
+                            return full[0]['user']['username'];
+                        }
+                    },
+                    {
                         "targets": 2,
                         "render": function(data, type, full, meta) {
-                            return '<span class="badge badge-pill badge-success" title="Vendor">' + full[8] +
-                                '</span> <span class="badge badge-pill badge-info" title="Game Type">' + full[10] + '</span></br><b>' + data + '</b></br>' +
-                                '<code title="Game ID" style="font-size: 80%">' + full[9] +
-                                '</code></br><code title="Game Round" style="font-size: 80%">' + full[11] +
+                            return '<span class="badge badge-pill badge-success" title="Vendor">' + full[0]['details']['game']['vendor'] +
+                                '</span> <span class="badge badge-pill badge-info" title="Game Type">' + full[0]['details']['game']['type'] + '</span></br><b>' + full[0]['details']['game']['title'] + '</b></br>' +
+                                '<code title="Game ID" style="font-size: 80%">' + full[0]['details']['game']['id'] +
+                                '</code></br><code title="Game Round" style="font-size: 80%">' + full[0]['details']['game']['round'] +
                                 '</code>';
                         }
                     },
                     {
                         "targets": 3,
                         "render": function(data, type, full, meta) {
-                            return moment(full[4]).add(1, 'hour').format("YYYY-MM-DD HH:mm:ss");
+                            return moment(full[0]['processed_at']).add(1, 'hour').format("YYYY-MM-DD HH:mm:ss");
                         }
                     },
                     {
                         "targets": 4,
                         'render': function(data, type, full, meta) {
-                            return moment(full[5]).add(1, 'hour').format("YYYY-MM-DD HH:mm:ss");
+                            return moment(full[1]['processed_at']).add(1, 'hour').format("YYYY-MM-DD HH:mm:ss");
                         }
                     },
                     {
@@ -361,15 +376,15 @@
                             return '<div class="user-betting-details"><table class=table-bet><tbody>' +
                                 '<tr>' +
                                 '<td>Bet Amount</td>' +
-                                '<td class="text-right">' + full[13] + '<code> Pot</code></td>' +
+                                '<td class="text-right">' + Math.abs(full[0]['amount']) + '<code> Pot</code></td>' +
                                 '</tr>' +
                                 '<tr>' +
                                 '<td>Winning Amount</td>' +
-                                '<td class="text-right">' + full[14] + ' Pot</td>' +
+                                '<td class="text-right">' + full[1]['amount'] + ' Pot</td>' +
                                 '</tr>' +
                                 '<tr>' +
                                 '<td>Profit and Loss</td>' +
-                                '<td class="text-right">' + (full[14] - full[13]) + '<code> Pot</code></td>' +
+                                '<td class="text-right">' + (full[0]['amount'] - full[1]['amount']) + '<code> Pot</code></td>' +
                                 '</tr>' +
                                 '</tbody</table></div>';
                         }
@@ -379,7 +394,7 @@
                         "className": 'text-center',
                         'render': function(data, type, full, meta) {
                             if (full[10] != 'slot') {
-                                return '<button type="button" data-id="' + full[0] + '" data-name="' + full[1] +
+                                return '<button type="button" data-id="' + full[0]['id'] + '" data-name="' + full[0]['user']['username'] +
                                     '" data-toggle="modal" data-target="#betDetails" class="btn waves-effect waves-light btn-sm btn-info">Details</button>';
                             } else {
                                 return 'No details available.';
@@ -388,7 +403,7 @@
                     }
                 ],
                 "initComplete": function(settings, json) {
-                    var cnt = table.ajax.json()['aaData'].length;
+                    // var cnt = table.ajax.json()['aaData'].length;
 
                     // if (table.ajax.json()['aaData'].length == 0) {
                     //     $('.dataTables_empty').text('[Too Many Request] 지정된 요청 간격 이상으로 API를 호출 하실 수 없습니다.30초 동안 기다려 주십시오.');
@@ -406,13 +421,21 @@
                 var id = $(e.relatedTarget).data('id');
 
                 $.ajax({
-                    url: '{{ url('bet-history/details') }}',
+                    url: "https://api.honorlink.org/api/transaction-detail",
+                    headers: {
+                        'Authorization': 'Bearer Wq6U9iv5WErdYetknhvQ4d2Ke4OB36LKaxeDY5yD',
+                    },
                     type: 'GET',
                     data: {
                         'id': id
                     },
                     beforeSend: function() {
 
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.status);
+                        $('#betDetails').modal('hide');
+                        swal("Failed", "너무 오래된 내역을 조회가 불가능합니다.", "error");
                     },
                     success: function(data) {
                         // var data = $.parseJSON(data);
