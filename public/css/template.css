@@ -98,3 +98,49 @@
     	font-size: 14px;
     }
 }
+
+input[type="radio"]:checked + div::before {
+content: "✔";
+position: absolute;
+bottom: 31px;
+top: -10px;
+right: 8px;
+font-size: 21px;
+color: white;
+-webkit-transform: rotate(30deg);
+-moz-transform: rotate(30deg);
+-o-transform: rotate(30deg);
+-ms-transform: rotate(30deg);
+transform: rotate(30deg);
+animation: fall 0.5s forwards;
+}
+
+@keyframes fall {
+100% {
+    -webkit-transform: translate(-5px,5px) rotate(30deg);
+    -moz-transform: translate(-5px,5px) rotate(30deg);
+    -o-transform: translate(-5px,5px) rotate(30deg);
+    -ms-transform: translate(-5px,5px) rotate(30deg);
+    transform: translate(-5px,5px) rotate(30deg);
+}
+}
+
+@-moz-keyframes fall {
+100% {
+    -webkit-transform: translate(-5px,5px) rotate(30deg);
+    -moz-transform: translate(-5px,5px) rotate(30deg);
+    -o-transform: translate(-5px,5px) rotate(30deg);
+    -ms-transform: translate(-5px,5px) rotate(30deg);
+    transform: translate(-5px,5px) rotate(30deg);
+}
+}
+
+@-webkit-keyframes fall {
+ 100% {
+    -webkit-transform: translate(-5px,5px) rotate(30deg);
+    -moz-transform: translate(-5px,5px) rotate(30deg);
+    -o-transform: translate(-5px,5px) rotate(30deg);
+    -ms-transform: translate(-5px,5px) rotate(30deg);
+    transform: translate(-5px,5px) rotate(30deg);
+}
+}

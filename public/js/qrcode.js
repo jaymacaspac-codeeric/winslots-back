@@ -570,7 +570,6 @@ var QRCode;
 		
 		if (this._htOption.text) {
 			this.makeCode(this._htOption.text);	
-			console.log('make');
 		}
 	};
 	
@@ -586,7 +585,6 @@ var QRCode;
 		this._el.title = sText;
 		this._oDrawing.draw(this._oQRCode);			
 		this.makeImage();
-		console.log('make');
 	};
 	
 	/**

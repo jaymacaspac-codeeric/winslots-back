@@ -401,7 +401,8 @@
 
                         <form class="form-horizontal request-deposit-form" role="form">
                             {!! csrf_field() !!}
-                            <input type="hidden" class="exchangeRate" value="{{ $rate }}">
+                            <input type="hidden" class="exchangeRate" name="rate" value="{{ $rate }}">
+                            <input type="hidden" class="address" name="address" value="">
                             
                             <span>STEP 1: Select a Deposit Method</span>
 
@@ -482,7 +483,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+                                        <div class="form-group deposit-captcha"></div>
+                                        <div class="form-group">
+                                            <input ty
+                                            pe="text" name="captcha" placeholder="Enter Code" class="form-control captcha" required>
+                                        </div>
                                         {{-- <div class="form-group row">
                                             <label for="exchangeRateForDisplay" class="col-sm-4 col-form-label text-left">Rate 
                                                 <span class="label label-danger">{{ $rate }}%</span>
@@ -504,7 +509,7 @@
                     </div>
                 </div>
 
-                <div id="depositAddressModal1" class="iziModal1" data-izimodal-title="Deposit Request">
+                <div id="depositAddressModal1" class="iziModal1">
                     <div class="modal-body">
                         <div><span class="payment-amount text-primary"></span> </div>
 
@@ -647,6 +652,44 @@
         var deposit_method = $('input[name="method"]:checked').val();
         var payment_amount = 0;
 
+        var depositModal = $(".iziModal").iziModal({
+            width: 700,
+            radius: 5,
+            padding: 20,
+            headerColor: '#238bf7',
+            zindex: 999,
+            onOpening: function() {
+                depositModal.iziModal('startLoading');
+                $.ajax({
+                    url: "{{ route('deposit.captcha') }}",
+                    type: 'GET',
+                    success: function(data) {
+                        $('.deposit-captcha').html(data);
+                        depositModal.iziModal('stopLoading');
+                    }
+                });
+            },
+            onClosed: function() {
+                $('.deposit-captcha').html('');
+                $('input:radio[name="method"]').prop("checked", false);
+                $('input:radio[name="amount"]').prop("checked", false);
+                $('.deposit_amount').val('');
+                $('.deposit_charge_amount').val('');
+                $('.captcha').val('');
+                deposit_amount = '';
+                deposit_method = '';
+            },
+        }); 
+        
+        var addressModal = $('#depositAddressModal1').iziModal({
+                    width: 700,
+                    radius: 5,
+                    padding: 20,
+                    headerColor: '#238bf7',
+                    zindex: 999,
+                    overlayClose: false,
+                });
+
         var rate = $('.exchangeRate').val();
 
         $(document).on('change', 'input:radio[name="amount"]', function() {
@@ -665,7 +708,6 @@
             //convert KRW to USD
             var toKRW = charge_amount * (rate / 100);
             payment_amount = toKRW;
-            console.log(toKRW);
             // var toUSD = toKRW / 1257.15;
             // console.log($.number(toUSD, 2));
             $('.deposit_amount').val($.number(toKRW));
@@ -681,12 +723,13 @@
 
         $(document).on('change', 'input:radio[name="method"]', function() {
             deposit_method = $('input[name="method"]:checked').val();
-            console.log(deposit_method);
+            $('.address').val($('input[name="method"]:checked').data('params'));
         });
 
         $(document).on('click', '.submit-request-deposit',function() {
             var deposit_request_amount_val = $('.deposit_charge_amount');
             var deposit_amount_val = $('.deposit_amount');
+            var captcha = $('.captcha').val();
 
             if(deposit_method == undefined || deposit_method == '') {
                 iziToast.error({
@@ -704,26 +747,62 @@
                 });
             }
 
-            if(deposit_method != '' && deposit_method != undefined && deposit_amount != '' && deposit_amount != undefined && deposit_request_amount_val != '' && deposit_amount_val != '') {
-                $('#depositModal1').iziModal('close');
-                $('#depositAddressModal1').iziModal('open');
+            if(captcha == '') {
+                iziToast.error({
+                    message: 'The captcha field is required.',
+                    position: "topCenter",
+                    timeout: 3000
+                });
+            }
+
+            if(captcha !='' && deposit_method != '' && deposit_method != undefined && deposit_amount != '' && deposit_amount != undefined && deposit_request_amount_val != '' && deposit_amount_val != '') {
+                    $('.qrcode').html("");
+                    $.ajax({
+                        url: "{{ route('deposit.request') }}",
+                        type: 'POST',
+                        data: $('.request-deposit-form').serialize(),
+                        success: function(data) {
+                            if(data != 'Invalid captcha') {
+                                var params = $('input[name="method"]:checked').data('params');
+                                var img = $('input[name="method"]:checked').data('img');
+                                depositModal.iziModal('close');
+
+                                addressModal.iziModal('startLoading');
+                                addressModal.iziModal('setTitle', 'Request Deposit');
+                                addressModal.iziModal('open');
+                                addressModal.on('opened', function (e) {
+                                    $(".deposit-method-img").attr("src", "{{ URL::asset('assets/images/gateway') }}" + '/'+img);
+                                    $('.crypto-address').html(params);
+                                    $('.payment-amount').html(payment_amount + ' KRW');
+                                    var qrcode = new QRCode("qrcode", {
+                                                width : 150,
+                                                height : 150,
+                                                colorDark : "#000000",
+                                                colorLight : "#ffffff",
+                                                correctLevel : QRCode.CorrectLevel.H
+                                            });
+                                    qrcode.makeCode(data['address']); 
+                                    addressModal.iziModal('stopLoading');
+                                });
+                            } else {
+                                iziToast.error({
+                                    message: 'Invalid captcha.',
+                                    position: "topCenter",
+                                    timeout: 3000
+                                });
+                            }
+                        },
+                        error: function (reject) {
+                            if( reject.status === 422 ) {
+                                var errors = $.parseJSON(reject.responseText);
+                            }
+                        }
+                    });
+
+
             }
         });
 
-        $('#depositModal').on('hidden.bs.modal', function() {
-            $('input:radio[name="method"]').prop("checked", false);
-            $('input:radio[name="amount"]').prop("checked", false);
-            $('.deposit_amount').val('');
-            $('.deposit_charge_amount').val('');
-            deposit_amount = '';
-            deposit_method = '';
-        });
-
-        $('#depositAddressModal').on('hidden.bs.modal', function() {
-            $('.crypto-address').html("");
-            qrcode.clear();
-            payment_amount = 0;
-        });
 
         $(document).on('click', '.copy-clipboard', function(){
             var r = document.createRange();
@@ -733,73 +812,12 @@
             try {
                 document.execCommand('copy');
                 window.getSelection().removeAllRanges();
+                $('.copy-clipboard').html('Copied');
+                setTimeout(function () {
+                    $('.copy-clipboard').html('Copy Address');
+                }, 2000);
             } catch (err) {
                 console.log('Unable to copy');
-            }
-        });
-
-        $(".iziModal").iziModal({
-            width: 700,
-            radius: 5,
-            padding: 20,
-            headerColor: '#238bf7',
-            zindex: 999,
-            onClosed: function(){
-                $('input:radio[name="method"]').prop("checked", false);
-                $('input:radio[name="amount"]').prop("checked", false);
-                $('.deposit_amount').val('');
-                $('.deposit_charge_amount').val('');
-                deposit_amount = '';
-                deposit_method = '';
-            },
-        });
-
-        $(".iziModal1").iziModal({
-            width: 700,
-            radius: 5,
-            padding: 20,
-            headerColor: '#238bf7',
-            zindex: 999,
-            overlayClose: false,
-            onOpening: function(modal) {
-                modal.startLoading();
-                $('.qrcode').html("");
-                $.ajax({
-                    url: "{{ route('deposit.request') }}",
-                    type: 'POST',
-                    data: $('.request-deposit-form').serialize(),
-                    success: function(data) {
-                        console.log(data);
-                        // $('#depositModal').modal('toggle');
-                        var params = $('input[name="method"]:checked').data('params');
-                        var img = $('input[name="method"]:checked').data('img');
-
-                        $(".deposit-method-img").attr("src", "{{ URL::asset('assets/images/gateway') }}" + '/'+img);
-                        $('.crypto-address').html(params);
-                        // 
-                        // $('#depositAddressModal').modal('show');
-                        $('.payment-amount').html(payment_amount + ' KRW');
-                        var qrcode = new QRCode("qrcode", {
-                                    width: 150,
-                                    height: 150,
-                                    colorDark : "#000000",
-                                    colorLight : "#ffffff",
-                                    correctLevel : QRCode.CorrectLevel.H
-                                });
-                        qrcode.makeCode(params); 
-
-                        modal.stopLoading();
-                    }
-                });
-            },
-            onOpened: function() {
-            },
-            onClosed: function() {
-                $('.crypto-address').html("");
-                payment_amount = 0;
-            },
-            afterRender: function() {
-   
             }
         });
 

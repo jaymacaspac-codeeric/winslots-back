@@ -103,6 +103,7 @@ Route::post('/check-duplicate-agent', [AgentController::class, 'checkAgentDuplic
 Route::get('/agent-tree', [AgentController::class, 'populateAgentTree'])->name('agent.tree');
 
 // DEPOSIT AND WITHDRAW
+Route::get('/deposit/captcha', [DepositController::class, 'depositCaptcha'])->name('deposit.captcha');
 Route::post('/deposit/request', [DepositController::class, 'agentRequestDeposit'])->name('deposit.request');
 Route::get('/deposit/pending', [DepositController::class, 'pendingDeposit'])->name('deposit.pending');
 Route::get('/deposit/pending/list', [DepositController::class, 'pendingDepositList'])->name('deposit.pending.list');

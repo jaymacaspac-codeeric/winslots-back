@@ -38,6 +38,11 @@ class DepositController extends Controller
         return $pending_deposits;
     }
 
+    public function depositCaptcha() {
+        
+        return loadCustomCaptcha();
+    }
+
     public function agentRequestDeposit(Request $request) {
         // $request_deposit = Http::withHeaders(['x-api-key' => '6VKQSZK-NZB4NH8-M5NNK0E-JWTPX7Q'])->post('https://api.nowpayments.io/v1/payment', [
         //     'price_amount'          => $_POST['deposit_amount'],
@@ -81,22 +86,45 @@ class DepositController extends Controller
             "burning_percent" => null
         ];
 
-        $deposit = DB::table('info_deposit')->insert([
-            // 'transaction_id'    => getTrx() . time() . session('id'),
-            'transaction_id'    => strtoupper(uniqid(date("Ym"))).session('id'),
-            'user_id'           => session('agent_id'),
-            'username'          => session('username'),
-            'transaction_type'  => 'deposit',
-            'request_amount'            => (float) str_replace(',', '', $request->deposit_charge_amount),
-            'krw_amount'        => (float) str_replace(',', '', $request->deposit_amount),
-            'payment_method'    => $request->method,
-            'user_type'         => 2,
-            'status'            => 2,  // 1:success, 2:pending, 3:cancel
-            'created_at'        =>  date("Y-m-d\TH:i:s\Z", strtotime(Carbon::now()))
-        ]);
+        $this->validateDeposit($request);
 
-        // return $request_deposit;
-        return $request;
+        if(isset($request->captcha)){
+            if(!captchaVerify($request->captcha, $request->captcha_secret)){
+                $notify[] = ['error',"Invalid captcha"];
+                return 'Invalid captcha';
+            } else {
+                $deposit = DB::table('info_deposit')->insert([
+                    // 'transaction_id'    => getTrx() . time() . session('id'),
+                    'transaction_id'    => strtoupper(uniqid('DP')).session('id'),
+                    'user_id'           => session('agent_id'),
+                    'username'          => session('username'),
+                    'transaction_type'  => 'deposit',
+                    'request_amount'    => (float) str_replace(',', '', $request->deposit_charge_amount),
+                    'krw_amount'        => (float) str_replace(',', '', $request->deposit_amount),
+                    'payment_method'    => $request->method,
+                    'user_type'         => 2,
+                    'status'            => 2,  // 1:success, 2:pending, 3:cancel
+                    'created_at'        => date("Y-m-d\TH:i:s\Z", strtotime(Carbon::now()))
+                ]);
+
+                return $request;
+                // return captchaVerify($request->captcha, $request->captcha_secret);
+            }
+        }
+    }
+
+    protected function validateDeposit(Request $request)
+    {
+        $validation_rule = [
+            'deposit_charge_amount' => 'required',
+            'deposit_amount' => 'required',
+            'method' => 'required',
+        ];
+
+        $validation_rule['captcha'] = 'required';
+
+        $request->validate($validation_rule);
+
     }
 
     public function approve(Request $request) {
@@ -123,7 +151,7 @@ class DepositController extends Controller
                 'transaction_id'    => $details->transaction_id,
                 'target_user'       => $details->user_id,
                 'user_type'         => $details->user_type,
-                'request_amount'            => $details->request_amount,
+                'request_amount'    => $details->request_amount,
                 'details'           => 'Deposit Via ' . $details->payment_method,
                 'created_at'        =>  date("Y-m-d\TH:i:s\Z", strtotime(Carbon::now()))
             ]);

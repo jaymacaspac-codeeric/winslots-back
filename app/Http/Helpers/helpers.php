@@ -87,8 +87,11 @@ function osBrowser() {
         }
     }
 
+    $isMobile = is_numeric(strpos(strtolower($userAgent), "mobile"));
+
     $data['os_platform']    = $osPlatform;
     $data['browser']        = $browser;
+    $data['is_mobile']      = $isMobile;
 
     return $data;
 }
@@ -160,11 +163,11 @@ function imagePath() {
         'size' => '800x800',
     ];
     $data['verify'] = [
-        'withdraw'=>[
-            'path'=>'assets/images/verify/withdraw'
+        'withdraw' => [
+            'path' => 'assets/images/verify/withdraw'
         ],
-        'deposit'=>[
-            'path'=>'assets/images/verify/deposit'
+        'deposit' => [
+            'path' => 'assets/images/verify/deposit'
         ]
     ];
     $data['image'] = [
@@ -177,13 +180,13 @@ function imagePath() {
         ]
     ];
     $data['profile'] = [
-        'user'=> [
-            'path'=>'assets/images/user/profile',
-            'size'=>'206x206'
+        'user' => [
+            'path' => 'assets/images/user/profile',
+            'size' => '206x206'
         ],
-        'admin'=> [
-            'path'=>'assets/admin/images/profile',
-            'size'=>'400x400'
+        'admin' => [
+            'path' => 'assets/admin/images/profile',
+            'size' => '400x400'
         ]
     ];
     return $data;
@@ -259,7 +262,7 @@ function format_datatable($dataTable,$total,$fieldNames) {
 
             '}';
 
-    return $json_data ;
+    return $json_data;
 }
 
 function getTrx($length = 3)
@@ -271,6 +274,31 @@ function getTrx($length = 3)
         $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
     return $randomString;
+}
+
+function loadCustomCaptcha($height = 60, $width = '100%', $bgcolor = '#029169', $textcolor = '#abc')
+{
+    $textcolor = '#c4fff1';
+    $code = rand(100000, 999999);
+    $char = str_split($code);
+    $ret = '<link href="https://fonts.googleapis.com/css?family=Henny+Penny&display=swap" rel="stylesheet">';
+    $ret .= '<div style="height: ' . $height . 'px; line-height: ' . $height . 'px; width:' . $width . '; text-align: center; background-color: ' . $bgcolor . '; color: ' . $textcolor . '; font-size: ' . ($height - 20) . 'px; font-weight: bold; letter-spacing: 20px; font-family: Henny Penny, cursive;  -webkit-user-select: none; -moz-user-select: none;-ms-user-select: none;user-select: none;  display: flex; justify-content: center;">';
+    foreach ($char as $value) {
+        $ret .= '<span style="float:left;-webkit-transform: rotate(' . rand(-60, 60) . 'deg);">' . $value . '</span>';
+    }
+    $ret .= '</div>';
+    $captchaSecret = hash_hmac('sha256', $code, 'r~*@)E9X(B*C,^C.@PK+YF(');
+    $ret .= '<input type="hidden" name="captcha_secret" value="' . $captchaSecret . '">';
+    return $ret;
+}
+
+function captchaVerify($code, $secret)
+{
+    $captchaSecret = hash_hmac('sha256', $code, 'r~*@)E9X(B*C,^C.@PK+YF(');
+    if ($captchaSecret == $secret) {
+        return true;
+    }
+    return false;
 }
 
 ?>

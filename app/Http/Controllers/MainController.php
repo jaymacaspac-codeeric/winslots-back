@@ -45,6 +45,7 @@ class MainController extends Controller
                 ])->first();
         if($user) {
             $ip_info = getIpInfo();
+            $os_info = osBrowser();
 
             $last_login = date("Y-m-d\TH:i:s\Z", strtotime(Carbon::now()));
 
