@@ -6,7 +6,7 @@
 .radio-tile-group .input-container {
     position: relative;
     height: 5rem;
-    width: 33%;
+    /* width: 33%; */
 }
 .radio-tile-group .input-container .radio-button {
     opacity: 0;
@@ -36,7 +36,7 @@
 }
 .radio-tile-group .input-container .radio-tile-label {
     text-align: center;
-    font-size: 13px;
+    font-size: 20px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -76,71 +76,48 @@
 .qrcode-container {
     /* width: 100%;  */
     text-align: center; 
-    padding: 0;
+    /* padding: 0; */
 }
 
 .coint-img {
     /* width: 100%;  */
+    /* margin-bottom: 5px; */
     text-align: center; 
-    margin-bottom: 5px;
 }
 
 .deposit-method-img {
     width: 150px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
 
 .crypto-address {
     font-size: 20px;
 }
-@media(max-width: 480px){
+
+@media(max-width: 480px) {
     .crypto-address {
     	font-size: 14px;
     }
 }
 
 input[type="radio"]:checked + div::before {
-content: "✔";
-position: absolute;
-bottom: 31px;
-top: -10px;
-right: 8px;
-font-size: 21px;
-color: white;
--webkit-transform: rotate(30deg);
--moz-transform: rotate(30deg);
--o-transform: rotate(30deg);
--ms-transform: rotate(30deg);
-transform: rotate(30deg);
-animation: fall 0.5s forwards;
+    content: "\2713";
+    top: 3px;
+    right: 3px;
+    color: rgb(255, 255, 255);
+    font-weight: 700;
+    background-color: rgb(60, 217, 173, 1);
+    position: absolute;
+    line-height: 22px;
+    z-index: 10;
+    font-size: 15px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
 }
 
-@keyframes fall {
-100% {
-    -webkit-transform: translate(-5px,5px) rotate(30deg);
-    -moz-transform: translate(-5px,5px) rotate(30deg);
-    -o-transform: translate(-5px,5px) rotate(30deg);
-    -ms-transform: translate(-5px,5px) rotate(30deg);
-    transform: translate(-5px,5px) rotate(30deg);
-}
-}
-
-@-moz-keyframes fall {
-100% {
-    -webkit-transform: translate(-5px,5px) rotate(30deg);
-    -moz-transform: translate(-5px,5px) rotate(30deg);
-    -o-transform: translate(-5px,5px) rotate(30deg);
-    -ms-transform: translate(-5px,5px) rotate(30deg);
-    transform: translate(-5px,5px) rotate(30deg);
-}
-}
-
-@-webkit-keyframes fall {
- 100% {
-    -webkit-transform: translate(-5px,5px) rotate(30deg);
-    -moz-transform: translate(-5px,5px) rotate(30deg);
-    -o-transform: translate(-5px,5px) rotate(30deg);
-    -ms-transform: translate(-5px,5px) rotate(30deg);
-    transform: translate(-5px,5px) rotate(30deg);
-}
+.payment-preview {
+    border: 1px solid #ffb22b;
+    text-align: center;
+    border-radius: 5px;
 }

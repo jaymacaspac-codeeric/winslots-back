@@ -605,7 +605,6 @@ var QRCode;
 	 */
 	QRCode.prototype.clear = function () {
 		this._oDrawing.clear();
-		console.log('clear');
 	};
 	
 	/**
