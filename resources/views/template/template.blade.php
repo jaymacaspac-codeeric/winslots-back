@@ -408,7 +408,12 @@
 
                             <div class="radio-tile-group text-center row m-b-20 m-t-20">
                                 @foreach ($paymentMethod as $method)
-                                    <div class="input-container col-lg-{{ 12 / count($paymentMethod) }} col-md-{{ 12 / count($paymentMethod) }} col-sm-{{ 12 / count($paymentMethod) }} col-{{ 12 / count($paymentMethod) }}">
+                                        @if(count($paymentMethod) > 4)
+                                            <div class="input-container col-lg-4 col-md-4 col-sm-4 col-4">
+                                        @else
+                                            <div class="input-container col-lg-{{ 12 / count($paymentMethod) }} col-md-{{ 12 / count($paymentMethod) }} col-sm-{{ 12 / count($paymentMethod) }} col-{{ 12 / count($paymentMethod) }}">
+                                        @endif
+
                                         <input id="{{ $method->code }}" class="radio-button" type="radio" name="method" data-id="{{ $method->id }}" data-name="{{ $method->name }}" data-img="{{ $method->image }}" data-params="{{ $method->parameter }}" value="{{ $method->name }}" />
                                         <div class="radio-tile">
                                             <img src="{{ URL::asset('assets/images/gateway') }}/{{ $method->image }}" class="method-logo">
@@ -423,9 +428,6 @@
                                 <div class="input-container col-sm-3 col-6">
                                     <input id="100000" class="radio-button" type="radio" name="amount" value="100000" />
                                     <div class="radio-tile">
-                                        <div class="icon walk-icon">
-
-                                        </div>
                                         <label for="100000" class="radio-tile-label">100,000</label>
                                     </div>
                                 </div>
@@ -433,9 +435,6 @@
                                 <div class="input-container col-sm-3 col-6">
                                     <input id="500000" class="radio-button" type="radio" name="amount" value="500000" />
                                     <div class="radio-tile">
-                                        <div class="icon bike-icon">
-                                            
-                                        </div>
                                         <label for="500000" class="radio-tile-label">500,000</label>
                                     </div>
                                 </div>
@@ -443,18 +442,12 @@
                                 <div class="input-container col-sm-3 col-6">
                                     <input id="1000000" class="radio-button" type="radio" name="amount" value="1000000" />
                                     <div class="radio-tile">
-                                        <div class="icon bike-icon">
-                                            
-                                        </div>
                                         <label for="1000000" class="radio-tile-label">1,000,000</label>
                                     </div>
                                 </div>
                                 <div class="input-container col-sm-3 col-6">
                                     <input id="10000000" class="radio-button" type="radio" name="amount" value="10000000" />
                                     <div class="radio-tile">
-                                        <div class="icon bike-icon">
-                                            
-                                        </div>
                                         <label for="10000000" class="radio-tile-label">10,000,000</label>
                                     </div>
                                 </div>
@@ -708,7 +701,7 @@
             $('.deposit_charge_amount').val($.number(deposit_amount));
         });
 
-        $(document).number(true).on('input', '.deposit_charge_amount', function() {
+        $(document).on('input', '.deposit_charge_amount', function() {
             $('input:radio[name="amount"]').prop("checked", false);
             var charge_amount = $(this).val();
             //convert KRW to USD
@@ -719,10 +712,12 @@
             $('.deposit_amount').val($.number(toKRW));
         });
 
-        $(document).number(true).on("input", '.deposit_amount', function() {
+        $('.deposit_charge_amount').number(true);
+        $('.deposit_amount').number(true);
+
+        $(document).on("input", '.deposit_amount', function() {
             $('input:radio[name="amount"]').prop("checked", false);
             var res = $(this).val() / (rate / 100);
-            // console.log(test);
             $('.deposit_charge_amount').val($.number(res));
             // console.log($.number(test, 2) * 1257.15);
         });
@@ -745,7 +740,7 @@
                 });
             }
 
-            if(deposit_amount == undefined || deposit_amount == '' || deposit_request_amount_val == '' || deposit_amount_val == '') {
+            if(deposit_amount == undefined || deposit_amount == '' || deposit_request_amount_val == '' || deposit_amount_val == '' || deposit_request_amount_val == '0' || deposit_amount_val == '0') {
                 iziToast.error({
                     message: 'Please input amount.',
                     position: "topCenter",
@@ -761,59 +756,56 @@
                 });
             }
 
-            if(captcha !='' && deposit_method != '' && deposit_method != undefined && deposit_amount != '' && deposit_amount != undefined && deposit_request_amount_val != '' && deposit_amount_val != '') {
-                    $('.qrcode').html("");
-                    $.ajax({
-                        url: "{{ route('deposit.request') }}",
-                        type: 'POST',
-                        data: $('.request-deposit-form').serialize(),
-                        success: function(data) {
-                            if(data != 'invalid') {
-                                var params = $('input[name="method"]:checked').data('params');
-                                var img = $('input[name="method"]:checked').data('img');
-                                depositModal.iziModal('close');
+            if(captcha !='' && deposit_method != '' && deposit_method != undefined && deposit_amount != '' && deposit_amount != undefined && deposit_request_amount_val != '' && deposit_amount_val != '' && deposit_request_amount_val != '0' && deposit_amount_val != '0') {
+                $('.qrcode').html("");
+                $.ajax({
+                    url: "{{ route('deposit.request') }}",
+                    type: 'POST',
+                    data: $('.request-deposit-form').serialize(),
+                    success: function(data) {
+                        if(data != 'invalid') {
+                            var params = $('input[name="method"]:checked').data('params');
+                            var img = $('input[name="method"]:checked').data('img');
+                            depositModal.iziModal('close');
 
-                                addressModal.iziModal('startLoading');
-                                addressModal.iziModal('setTitle', 'Request Deposit');
-                                addressModal.iziModal('open');
-                                var qrcode = new QRCode("qrcode", {
-                                                width : 150,
-                                                height : 150,
-                                                colorDark : "#000000",
-                                                colorLight : "#ffffff",
-                                                correctLevel : QRCode.CorrectLevel.H
-                                            });
+                            addressModal.iziModal('startLoading');
+                            addressModal.iziModal('setTitle', 'Request Deposit');
+                            addressModal.iziModal('open');
+                            var qrcode = new QRCode("qrcode", {
+                                            width : 150,
+                                            height : 150,
+                                            colorDark : "#000000",
+                                            colorLight : "#ffffff",
+                                            correctLevel : QRCode.CorrectLevel.H
+                                        });
                                             
-                                addressModal.on('opened', function (e) {
-                                    $(".deposit-method-img").attr("src", "{{ URL::asset('assets/images/gateway') }}" + '/'+img);
-                                    $('.crypto-address').html(params);
-                                    $('.recharge-amount-preview').html(data['deposit_charge_amount'] + ' Pot');
-                                    $('.krw-total-amount').html(data['deposit_amount'] + ' KRW');
+                            addressModal.on('opened', function (e) {
+                                $(".deposit-method-img").attr("src", "{{ URL::asset('assets/images/gateway') }}" + '/'+img);
+                                $('.crypto-address').html(params);
+                                $('.recharge-amount-preview').html(data['deposit_charge_amount'] + ' Pot');
+                                $('.krw-total-amount').html(data['deposit_amount'] + ' KRW');
 
-                                    qrcode.makeCode(data['address']); 
-                                    addressModal.iziModal('stopLoading');
-                                });
+                                qrcode.makeCode(data['address']); 
+                                addressModal.iziModal('stopLoading');
+                            });
 
-                                addressModal.on('closed', function (e) {
-                                    console.log('closed');
-                                    qrcode.clear()
-                                });
-                            } else {
-                                iziToast.error({
-                                    message: 'Invalid captcha.',
-                                    position: "topCenter",
-                                    timeout: 3000
-                                });
-                            }
-                        },
-                        error: function (reject) {
-                            if( reject.status === 422 ) {
-                                var errors = $.parseJSON(reject.responseText);
-                            }
+                            addressModal.on('closed', function (e) {
+                                qrcode.clear();
+                            });
+                        } else {
+                            iziToast.error({
+                                message: 'Invalid captcha.',
+                                position: "topCenter",
+                                timeout: 3000
+                            });
                         }
-                    });
-
-
+                    },
+                    error: function (reject) {
+                        if( reject.status === 422 ) {
+                            var errors = $.parseJSON(reject.responseText);
+                        }
+                    }
+                });
             }
         });
 

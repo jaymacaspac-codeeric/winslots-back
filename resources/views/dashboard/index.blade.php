@@ -201,7 +201,8 @@
                     ],
                     "colorTheme": "light",
                     "showSymbolLogo": true,
-                    "displayMode": "adaptive",
+                    "isTransparent": false,
+                    "displayMode": "regular",
                     "locale": "en"
                 }
             </script>

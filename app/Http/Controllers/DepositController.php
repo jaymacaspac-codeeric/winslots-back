@@ -89,7 +89,7 @@ class DepositController extends Controller
         $this->validateDeposit($request);
 
         if(isset($request->captcha)){
-            if(!captchaVerify($request->captcha, $request->captcha_secret)){
+            if(!captchaVerify($request->captcha, $request->captcha_secret)) {
                 $notify[] = ['error',"Invalid captcha"];
                 return 'invalid';
             } else {
